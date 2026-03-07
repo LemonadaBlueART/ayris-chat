@@ -437,60 +437,55 @@ async function typeMessage(element,text){
     setTimeout(()=>cursor.remove(),500);
 
 }
-
 async function sendMessage(){
 
-    const text=userInput.value.trim();
+	const text = userInput.value.trim();
 
-    if(!text)return;
+	if(!text) return;
 
-    appendMessage("user",text);
+	appendMessage("user", text);
 
-    userInput.value="";
-    userInput.focus();
+	userInput.value = "";
+	userInput.focus();
 
-    const tempId="loading-"+Date.now();
+	const tempId = "loading-" + Date.now();
 
-    const msg=appendMessage("bot","",tempId);
+	appendMessage("bot", "Ayris está pensando...", tempId);
 
-    try{
+	try{
 
-        const response=await fetch(BOT_API_URL,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({message:text})
-        });
+		const response = await fetch(BOT_API_URL, {
+			method: "POST",
+			headers: {"Content-Type":"application/json"},
+			body: JSON.stringify({message:text})
+		});
 
-        const reader=response.body.getReader();
-        const decoder=new TextDecoder();
+		if(!response.ok){
+			throw new Error("Servidor respondeu erro");
+		}
 
-        while(true){
+		const data = await response.json();
 
-            const {done,value}=await reader.read();
+		const tempMsg = document.getElementById(tempId);
 
-            if(done)break;
+		if(tempMsg){
+			await typeMessage(tempMsg, data.reply);
+		}
 
-            const chunk=decoder.decode(value);
+	}catch(error){
 
-            const cleaned=chunk.replace(/data:/g,"");
+		console.error(error);
 
-            msg.textContent+=cleaned;
+		const tempMsg = document.getElementById(tempId);
 
-            scrollBottom();
+		if(tempMsg){
+			tempMsg.textContent = "Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
+			tempMsg.style.color = "red";
+		}
 
-        }
-
-    }catch(error){
-
-        console.error(error);
-
-        msg.textContent="Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
-        msg.style.color="red";
-
-    }
+	}
 
 }
-
 sendBtn.addEventListener("click",sendMessage);
 
 userInput.addEventListener("keydown",(e)=>{
