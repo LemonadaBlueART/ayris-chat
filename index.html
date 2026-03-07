@@ -451,7 +451,7 @@ async function sendMessage(){
 
     const tempId="loading-"+Date.now();
 
-    appendMessage("bot","Ayris está pensando...",tempId);
+    const msg=appendMessage("bot","",tempId);
 
     try{
 
@@ -461,30 +461,31 @@ async function sendMessage(){
             body:JSON.stringify({message:text})
         });
 
-        if(!response.ok){
-            throw new Error("Servidor respondeu erro");
-        }
+        const reader=response.body.getReader();
+        const decoder=new TextDecoder();
 
-        const data=await response.json();
+        while(true){
 
-        const tempMsg=document.getElementById(tempId);
+            const {done,value}=await reader.read();
 
-        if(tempMsg){
-            await typeMessage(tempMsg,data.reply);
+            if(done)break;
+
+            const chunk=decoder.decode(value);
+
+            const cleaned=chunk.replace(/data:/g,"");
+
+            msg.textContent+=cleaned;
+
+            scrollBottom();
+
         }
 
     }catch(error){
 
         console.error(error);
 
-        const tempMsg=document.getElementById(tempId);
-
-        if(tempMsg){
-
-            tempMsg.textContent="Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
-            tempMsg.style.color="red";
-
-        }
+        msg.textContent="Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
+        msg.style.color="red";
 
     }
 
