@@ -315,17 +315,30 @@
 		}
 
 		async function typeMessage(element, text) {
-			element.textContent = "";
-			const cursor = document.createElement("span");
-			cursor.classList.add("typing-cursor");
-
-			for (let i = 0; i < text.length; i++) {
-				element.innerHTML += text[i] === "\n" ? "<br>" : text[i];
-				if (i % 2 === 0) await new Promise(r => setTimeout(r, 15));
-				scrollBottom();
-			}
-			element.appendChild(cursor);
-			setTimeout(() => cursor.remove(), 500);
+		    element.textContent = "";
+		    const cursor = document.createElement("span");
+		    cursor.classList.add("typing-cursor");
+		
+		    // Função para processar blocos de código
+		    function processCodeBlocks(str) {
+		        return str.replace(/```([\s\S]*?)```/g, (_, codeContent) => {
+		            // Substitui cada linha por linha com indentação HTML
+		            const lines = codeContent.split("\n").map(line => line.replace(/^/,"&nbsp;&nbsp;")).join("<br>");
+		            return `<pre><code>${lines}</code></pre>`;
+		        });
+		    }
+		
+		    const processedText = processCodeBlocks(text);
+		
+		    for (let i = 0; i < processedText.length; i++) {
+		        const char = processedText[i];
+		        element.innerHTML += char === "\n" ? "<br>" : char;
+		        if (i % 2 === 0) await new Promise(r => setTimeout(r, 15));
+		        chatBox.scrollTop = chatBox.scrollHeight;
+		    }
+		
+		    element.appendChild(cursor);
+		    setTimeout(() => cursor.remove(), 500);
 		}
 
 		async function sendMessage() {
