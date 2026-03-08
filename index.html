@@ -57,6 +57,24 @@
 			animation: spinLoader 1s linear infinite;
 			opacity: 0;
 		}
+        /* Animação de Fade In para os tokens */
+        .fade-in-token {
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
+            display: inline-block;
+            white-space: pre-wrap; /* Mantém espaços e quebras de linha */
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(2px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
 
 		@keyframes introFade {
 			0% { opacity: 0; }
@@ -143,15 +161,16 @@
 		.chat-box::-webkit-scrollbar { width: 4px; }
 		.chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
-		.message {
-			max-width: 80%;
-			padding: 10px 14px;
-			font-size: 0.95rem;
-			line-height: 1.4;
-			border: 1px solid #333;
-			border-radius: 15px;
-			word-wrap: break-word;
-		}
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            border: 1px solid #333;
+            border-radius: 15px;
+
+            word-wrap: break-word;
+        }
 
 		.user-message {
 			background: #1c1c1c;
@@ -160,14 +179,15 @@
 			border-bottom-right-radius: 2px;
 		}
 
-		.bot-message {
-			background: #1c1c1c;
-			color: white;
-			align-self: flex-start;
-			border-bottom-left-radius: 2px;
-			white-space: pre-wrap;
-			font-family: monospace;
-		}
+        .bot-message {
+            background: #1c1c1c;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
 		.chat-input-area {
 			display: flex;
@@ -317,43 +337,73 @@
 			userInput.focus();
 
 			const tempId = "loading-" + Date.now();
-			appendMessage("bot", "...", tempId);
+			appendMessage("bot", "Ayris está pensando...", tempId);
+            
+            try {
+                const response = await fetch(BOT_API_URL, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "ngrok-skip-browser-warning": "true" // Pula o aviso do ngrok
+                    },
+                    body: JSON.stringify({ message: text })
+                });
 
-			try {
-				const response = await fetch(BOT_API_URL, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ message: text })
-				});
+                if (!response.ok) throw new Error("Erro na rede");
 
-				const data = await response.json();
-				const tempMsg = document.getElementById(tempId);
-				if (tempMsg) await typeMessage(tempMsg, data.reply);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                const tempMsg = document.getElementById(tempId);
 
-			} catch (error) {
-				const tempMsg = document.getElementById(tempId);
-				if (tempMsg) {
-					tempMsg.textContent = "Vish, deu erro paizão, espera um tanto até o servidor voltar";
-					tempMsg.style.color = "red";
-				}
-			}
+                // ... dentro do try, após o const tempMsg = document.getElementById(tempId);
+                tempMsg.textContent = ""; // Limpa o "pensando..."
+
+                let fullText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    
+                    // Criamos um span para o efeito de fade
+                    const span = document.createElement("span");
+                    span.classList.add("fade-in-token");
+                    
+                    // IMPORTANTE: Tratar quebras de linha vindas do modelo
+                    span.textContent = chunk;
+                    
+                    tempMsg.appendChild(span);
+                    fullText += chunk;
+
+                    scrollBottom();
+                }
+            } catch (error) {
+                console.error(error); // Ajuda a debuggar no console do navegador
+                const tempMsg = document.getElementById(tempId);
+                if (tempMsg) {
+                    tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
+                    tempMsg.style.color = "red";
+                }
+            }
 		}
 
 		// Lógica de envio e quebra de linha
-		userInput.addEventListener("keydown", (e) => {
-			if (e.key === "Enter") {
-				if (isMobile) {
-					// No celular: Enter sempre pula linha, nunca envia
-					return; 
-				} else {
-					// No PC: Enter envia, Shift+Enter pula linha
-					if (!e.shiftKey) {
-						e.preventDefault();
-						sendMessage();
-					}
-				}
-			}
-		});
+        userInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                if (isMobile) {
+                    // No mobile, deixamos o comportamento padrão de pular linha
+                    // mas garantimos que não envie o formulário
+                    return; 
+                } else {
+                    // No PC: Enter envia, Shift+Enter pula linha
+                    if (!e.shiftKey) {
+                        e.preventDefault(); // EVITA que o navegador tente "submeter"
+                        sendMessage();
+                    }
+                }
+            }
+        });
 
 		// Ajuste automático da altura da textarea conforme digita
 		userInput.addEventListener("input", function() {
