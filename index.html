@@ -319,7 +319,7 @@
 			cursor.classList.add("typing-cursor");
 
 			for (let i = 0; i < text.length; i++) {
-				element.textContent += text[i];
+				element.innerHTML += text[i] === "\n" ? "<br>" : text[i];
 				if (i % 2 === 0) await new Promise(r => setTimeout(r, 15));
 				scrollBottom();
 			}
@@ -371,7 +371,8 @@
                     span.classList.add("fade-in-token");
                     
                     // IMPORTANTE: Tratar quebras de linha vindas do modelo
-                    span.textContent = chunk;
+                    const cleanChunk = chunk.replace(/\u200B/g, ""); // remove zero-width spaces
+					span.innerHTML = cleanChunk.replace(/\n/g, "<br>");
                     
                     tempMsg.appendChild(span);
                     fullText += chunk;
