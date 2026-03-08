@@ -338,7 +338,7 @@
 			userInput.focus();
 
 			const tempId = "loading-" + Date.now();
-			appendMessage("bot", "Ayris está pensando...", tempId);
+			appendMessage("bot", "...", tempId);
             
             try {
                 const response = await fetch(BOT_API_URL, {
