@@ -1,192 +1,509 @@
-<script>
+faz nesse código, que só de estar na pagina e digitar no teclado, já preencha a caixa de input e também adiciona que se o modelo estiver falando, não pode enviar mensagem do input:
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayris</title>
 
-const chatBox = document.getElementById("chat-box");
-const userInput = document.getElementById("user-input");
-const sendBtn = document.getElementById("send-btn");
-const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
 
-let botFalando = false;
+		body {
+			background: radial-gradient(circle at top, #212121, #0a0a0a);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100dvh;
+			color: white;
+			perspective: 1200px;
+			overflow: hidden;
+		}
 
-// Detecta se é dispositivo móvel
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+		/* ===========================
+		INTRO
+		=========================== */
+		#intro-screen {
+			position: fixed;
+			inset: 0;
+			background: black;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			z-index: 99999;
+			transition: opacity 1s ease;
+		}
 
-function scrollBottom() {
-	chatBox.scrollTop = chatBox.scrollHeight;
-}
+		#intro-title {
+			font-size: 100px;
+			letter-spacing: 12px;
+			opacity: 0;
+			animation: introFade 3s forwards;
+			text-align: center;
+		}
 
-function appendMessage(sender, text, id = null) {
-	const msg = document.createElement("div");
-	msg.classList.add("message");
-	msg.classList.add(sender === "user" ? "user-message" : "bot-message");
-	if (id) msg.id = id;
-	msg.textContent = text;
-	chatBox.appendChild(msg);
-	scrollBottom();
-	return msg;
-}
+		#intro-loader {
+			margin-top: 40px;
+			width: 60px;
+			height: 60px;
+			border: 6px solid transparent;
+			border-top: 6px solid white;
+			border-radius: 50%;
+			animation: spinLoader 1s linear infinite;
+			opacity: 0;
+		}
+        /* Animação de Fade In para os tokens */
+        .fade-in-token {
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
+            display: inline-block;
+            white-space: pre-wrap; /* Mantém espaços e quebras de linha */
+        }
 
-async function sendMessage() {
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(2px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
 
-	// BLOQUEIA ENVIO ENQUANTO IA RESPONDE
-	if (botFalando) return;
+		@keyframes introFade {
+			0% { opacity: 0; }
+			30% { opacity: 1; }
+			70% { opacity: 1; }
+			100% { opacity: 0; }
+		}
 
-	const text = userInput.value.trim();
-	if (!text) return;
+		@keyframes spinLoader {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
 
-	botFalando = true;
+		/* ===========================
+		CHAT CONTAINER
+		=========================== */
+		.chat-container {
+			position: relative;
+			width: 90vw;
+			height: 90vh;
+			min-width: 500px;
+			min-height: 500px;
+			background: #111;
+			border: 1px solid #444;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			border-radius: 20px;
+			box-shadow: 0 0 20px rgba(255, 255, 255, 0.05), 0 0 60px rgba(0, 0, 0, 0.8);
+			transition: transform 0.15s ease-out;
+			transform-style: preserve-3d;
+		}
 
-	appendMessage("user", text);
-	userInput.value = "";
-	userInput.style.height = "40px";
-	userInput.focus();
+		/* COBRA DE LUZ */
+		.chat-container::before {
+			content: "";
+			position: absolute;
+			top: -2px; left: -2px; right: -2px; bottom: -2px;
+			border-radius: 22px;
+			background: conic-gradient(from 0deg, transparent, transparent, red, rgb(168,109,0), yellow, red, transparent, transparent);
+			animation: snakeBorder 10s linear infinite;
+			z-index: 0;
+		}
 
-	const tempId = "loading-" + Date.now();
-	appendMessage("bot", "...", tempId);
+		.chat-container::after {
+			content: "";
+			position: absolute;
+			inset: 2px;
+			background: #111;
+			border-radius: 20px;
+			z-index: 1;
+		}
 
-	try {
+		.chat-container > * {
+			position: relative;
+			z-index: 2;
+		}
 
-		const response = await fetch(BOT_API_URL, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"ngrok-skip-browser-warning": "true"
-			},
-			body: JSON.stringify({ message: text })
-		});
+		@keyframes snakeBorder {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
 
-		if (!response.ok) throw new Error("Erro na rede");
+		.chat-header {
+			background: black;
+			color: #FFB6C1 ;
+			padding: 10px;
+			text-align: center;
+			font-size: 1.5rem;
+			font-weight: bold;
+			text-transform: uppercase;
+			letter-spacing: 3px;
+		}
 
-		const reader = response.body.getReader();
-		const decoder = new TextDecoder();
-		const tempMsg = document.getElementById(tempId);
+		.chat-box {
+			flex: 1;
+			padding: 12px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
 
-		tempMsg.textContent = "";
+		.chat-box::-webkit-scrollbar { width: 4px; }
+		.chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
-		while (true) {
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            border: 1px solid #333;
+            border-radius: 15px;
 
-			const { done, value } = await reader.read();
-			if (done) break;
+            word-wrap: break-word;
+        }
 
-			const chunk = decoder.decode(value, { stream: true });
+		.user-message {
+			background: #1c1c1c;
+			color: white;
+			align-self: flex-end;
+			border-bottom-right-radius: 2px;
+		}
 
-			const span = document.createElement("span");
-			span.classList.add("fade-in-token");
+        .bot-message {
+            background: #1c1c1c;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
 
-			const cleanChunk = chunk.replace(/\u200B/g, "");
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
-			span.innerHTML = cleanChunk
-				.replace(/\r\n|\r|\n/g, "<br>")
-				.replace(/(\d+\.)/g, "<br>$1")
-				.replace(/(<br>)+/g, "<br>");
+		.chat-input-area {
+			display: flex;
+			padding: 10px;
+			border-top: 1px solid #333;
+			gap: 8px;
+			align-items: flex-end;
+		}
 
-			tempMsg.appendChild(span);
+		.chat-input-area textarea {
+			flex: 1;
+			padding: 10px 15px;
+			border: 1px solid #444;
+			background: #111;
+			color: white;
+			border-radius: 15px;
+			outline: none;
+			font-size: 0.9rem;
+			resize: none;
+			min-height: 40px;
+			max-height: 150px;
+			overflow-y: auto;
+		}
 
+		.chat-input-area button {
+			background: red;
+			color: black;
+			border: none;
+			width: 50px;
+			height: 40px;
+			cursor: pointer;
+			font-weight: bold;
+			font-size: 1.2rem;
+			border-radius: 10px;
+			transition: background 0.2s;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.chat-input-area button:hover {
+			background: #ff2121;
+		}
+
+		.typing-cursor {
+			display: inline-block;
+			width: 8px;
+			background: white;
+			margin-left: 3px;
+			animation: blink 1s infinite;
+		}
+
+		@keyframes blink {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0; }
+		}
+
+		/* ===========================
+		MOBILE ADJUSTS
+		=========================== */
+		@media (max-width: 768px) {
+			.chat-container {
+				width: 98vw;
+				height: 98vh;
+				min-width: unset;
+				min-height: unset;
+			}
+
+			#intro-title {text-align: center; font-size: 30px; letter-spacing: 5px; }
+
+			.message { max-width: 75%; font-size: 1.5rem; }
+
+			.chat-input-area textarea { font-size:4rem; }
+
+			.chat-input-area button {
+				width: 110px;
+				height: 100px;
+			}
+		}
+	</style>
+</head>
+<body>
+
+	<div id="intro-screen">
+		<div id="intro-title">🥀🌺🌸😎🕶️Ayris🕶️😎🌸🌺🥀</div>
+		<div id="intro-loader"></div>
+	</div>
+
+	<div class="chat-container">
+		<div class="chat-header">CAIXA DE TEXTO DA AYRIS</div>
+		
+		<div id="chat-box" class="chat-box">
+			<div class="message bot-message">Ayris está funcionando! 😉</div>
+		</div>
+
+		<div class="chat-input-area">
+			<textarea id="user-input" placeholder="..." autocomplete="off" rows="1"></textarea>
+			<button type="button" id="send-btn">→</button>
+		</div>
+	</div>
+	
+	<script>
+	
+		const chatBox = document.getElementById("chat-box");
+		const userInput = document.getElementById("user-input");
+		const sendBtn = document.getElementById("send-btn");
+		const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
+	
+		let botFalando = false;
+	
+		// Detecta se é dispositivo móvel
+		const isMobile =
+			/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+			(window.innerWidth <= 768);
+	
+		function scrollBottom() {
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+	
+		function appendMessage(sender, text, id = null) {
+			const msg = document.createElement("div");
+			msg.classList.add("message");
+			msg.classList.add(sender === "user" ? "user-message" : "bot-message");
+	
+			if (id) msg.id = id;
+	
+			msg.textContent = text;
+	
+			chatBox.appendChild(msg);
+	
 			scrollBottom();
+	
+			return msg;
 		}
-
-		botFalando = false;
-
-	} catch (error) {
-
-		console.error(error);
-
-		const tempMsg = document.getElementById(tempId);
-
-		if (tempMsg) {
-			tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
-			tempMsg.style.color = "red";
+	
+		async function sendMessage() {
+	
+			// NÃO ENVIA SE A IA ESTÁ RESPONDENDO
+			if (botFalando) return;
+	
+			const text = userInput.value.trim();
+			if (!text) return;
+	
+			botFalando = true;
+	
+			appendMessage("user", text);
+	
+			userInput.value = "";
+			userInput.style.height = "40px";
+			userInput.focus();
+	
+			const tempId = "loading-" + Date.now();
+			appendMessage("bot", "Ayris está pensando...", tempId);
+	
+			try {
+	
+				const response = await fetch(BOT_API_URL, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"ngrok-skip-browser-warning": "true"
+					},
+					body: JSON.stringify({ message: text })
+				});
+	
+				if (!response.ok) throw new Error("Erro na rede");
+	
+				const reader = response.body.getReader();
+				const decoder = new TextDecoder();
+	
+				const tempMsg = document.getElementById(tempId);
+	
+				tempMsg.textContent = "";
+	
+				while (true) {
+	
+					const { done, value } = await reader.read();
+					if (done) break;
+	
+					const chunk = decoder.decode(value, { stream: true });
+	
+					const span = document.createElement("span");
+					span.classList.add("fade-in-token");
+	
+					const cleanChunk = chunk.replace(/\u200B/g, "");
+	
+					span.innerHTML = cleanChunk.replace(/\n/g, "<br>");
+	
+					tempMsg.appendChild(span);
+	
+					scrollBottom();
+				}
+	
+				botFalando = false;
+	
+			} catch (error) {
+	
+				console.error(error);
+	
+				const tempMsg = document.getElementById(tempId);
+	
+				if (tempMsg) {
+					tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
+					tempMsg.style.color = "red";
+				}
+	
+				botFalando = false;
+			}
 		}
-
-		botFalando = false;
-	}
-}
-
-/* ENTER PARA ENVIAR */
-
-userInput.addEventListener("keydown", (e) => {
-
-	if (botFalando) {
-		e.preventDefault();
-		return;
-	}
-
-	if (e.key === "Enter") {
-
-		if (isMobile) return;
-
-		if (!e.shiftKey) {
-			e.preventDefault();
-			sendMessage();
+	
+		/* ENTER PARA ENVIAR */
+	
+		userInput.addEventListener("keydown", (e) => {
+	
+			if (botFalando) {
+				e.preventDefault();
+				return;
+			}
+	
+			if (e.key === "Enter") {
+	
+				if (isMobile) return;
+	
+				if (!e.shiftKey) {
+					e.preventDefault();
+					sendMessage();
+				}
+			}
+		});
+	
+		/* AUTO ALTURA INPUT */
+	
+		userInput.addEventListener("input", function () {
+	
+			this.style.height = "auto";
+			this.style.height = this.scrollHeight + "px";
+	
+		});
+	
+		/* DIGITAR EM QUALQUER LUGAR DA PÁGINA */
+	
+		document.addEventListener("keydown", (e) => {
+	
+			if (botFalando) return;
+	
+			if (document.activeElement === userInput) return;
+	
+			if (e.ctrlKey || e.metaKey || e.altKey) return;
+	
+			if (e.key.length === 1) {
+	
+				userInput.focus();
+	
+				userInput.value += e.key;
+	
+				userInput.dispatchEvent(new Event("input"));
+			}
+	
+			if (e.key === "Backspace") {
+	
+				userInput.focus();
+	
+				userInput.value = userInput.value.slice(0, -1);
+	
+				userInput.dispatchEvent(new Event("input"));
+			}
+		});
+	
+		sendBtn.addEventListener("click", sendMessage);
+	
+		/* INTRO CONTROLE */
+	
+		const introTitle = document.getElementById("intro-title");
+		const introLoader = document.getElementById("intro-loader");
+		const introScreen = document.getElementById("intro-screen");
+	
+		setTimeout(() => {
+			introTitle.style.display = "none";
+			introLoader.style.opacity = "1";
+		}, 3000);
+	
+		setTimeout(() => {
+			introScreen.style.opacity = "0";
+		}, 6000);
+	
+		setTimeout(() => {
+			introScreen.style.display = "none";
+		}, 7000);
+	
+		/* EFEITO 3D */
+	
+		const container = document.querySelector(".chat-container");
+	
+		if (!isMobile) {
+	
+			document.addEventListener("mousemove", (e) => {
+	
+				const rect = container.getBoundingClientRect();
+	
+				const rotateX =
+					(-(e.clientY - (rect.top + rect.height / 2)) / rect.height) * 2;
+	
+				const rotateY =
+					((e.clientX - (rect.left + rect.width / 2)) / rect.width) * 2;
+	
+				container.style.transform =
+					`rotateX(${rotateX}deg) rotateY(${rotateY}deg}`;
+			});
+	
+			document.addEventListener("mouseleave", () => {
+				container.style.transform = "rotateX(0) rotateY(0)";
+			});
 		}
-	}
-});
+	
+	</script>
 
-/* AUTO ALTURA INPUT */
-
-userInput.addEventListener("input", function () {
-	this.style.height = "auto";
-	this.style.height = this.scrollHeight + "px";
-});
-
-/* DIGITAR EM QUALQUER LUGAR DA PÁGINA */
-
-document.addEventListener("keydown", (e) => {
-
-	if (botFalando) return;
-
-	// se já está digitando no input, não faz nada
-	if (document.activeElement === userInput) return;
-
-	// caracteres normais
-	if (e.key.length === 1) {
-		userInput.focus();
-		userInput.value += e.key;
-	}
-
-	// backspace
-	if (e.key === "Backspace") {
-		userInput.focus();
-		userInput.value = userInput.value.slice(0, -1);
-	}
-
-	userInput.dispatchEvent(new Event("input"));
-});
-
-sendBtn.addEventListener("click", sendMessage);
-
-/* INTRO CONTROLE */
-
-const introTitle = document.getElementById("intro-title");
-const introLoader = document.getElementById("intro-loader");
-const introScreen = document.getElementById("intro-screen");
-
-setTimeout(() => {
-	introTitle.style.display = "none";
-	introLoader.style.opacity = "1";
-}, 3000);
-
-setTimeout(() => { introScreen.style.opacity = "0"; }, 6000);
-setTimeout(() => { introScreen.style.display = "none"; }, 7000);
-
-/* EFEITO 3D */
-
-const container = document.querySelector(".chat-container");
-
-if (!isMobile) {
-
-	document.addEventListener("mousemove", (e) => {
-
-		const rect = container.getBoundingClientRect();
-
-		const rotateX = (-(e.clientY - (rect.top + rect.height / 2)) / rect.height) * 2;
-		const rotateY = ((e.clientX - (rect.left + rect.width / 2)) / rect.width) * 2;
-
-		container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg}`;
-	});
-
-	document.addEventListener("mouseleave", () => {
-		container.style.transform = "rotateX(0) rotateY(0)";
-	});
-}
-
-</script>
+</body>
+</html>
