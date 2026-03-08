@@ -40,7 +40,7 @@
 		}
 
 		#intro-title {
-			font-size: 60px;
+			font-size: 100px;
 			letter-spacing: 12px;
 			opacity: 0;
 			animation: introFade 3s forwards;
@@ -122,10 +122,10 @@
 
 		.chat-header {
 			background: black;
-			color: white;
+			color: #FFB6C1 ;
 			padding: 10px;
 			text-align: center;
-			font-size: 0.75rem;
+			font-size: 1.5rem;
 			font-weight: bold;
 			text-transform: uppercase;
 			letter-spacing: 3px;
@@ -236,15 +236,15 @@
 				min-height: unset;
 			}
 
-			#intro-title { font-size: 30px; letter-spacing: 5px; }
+			#intro-title {text-align: center; font-size: 30px; letter-spacing: 5px; }
 
-			.message { max-width: 85%; font-size: 1rem; }
+			.message { max-width: 75%; font-size: 1.5rem; }
 
-			.chat-input-area textarea { font-size: 1rem; }
+			.chat-input-area textarea { font-size:4rem; }
 
 			.chat-input-area button {
-				width: 60px;
-				height: 50px;
+				width: 110px;
+				height: 100px;
 			}
 		}
 	</style>
@@ -252,7 +252,7 @@
 <body>
 
 	<div id="intro-screen">
-		<div id="intro-title">Bem vindo ao chat box da Ayris!</div>
+		<div id="intro-title">🥀🌺🌸😎🕶️Ayris🕶️😎🌸🌺🥀</div>
 		<div id="intro-loader"></div>
 	</div>
 
@@ -264,7 +264,7 @@
 		</div>
 
 		<div class="chat-input-area">
-			<textarea id="user-input" placeholder=" Comando..." autocomplete="off" rows="1"></textarea>
+			<textarea id="user-input" placeholder="..." autocomplete="off" rows="1"></textarea>
 			<button type="button" id="send-btn">→</button>
 		</div>
 	</div>
