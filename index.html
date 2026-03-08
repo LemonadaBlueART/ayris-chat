@@ -10,53 +10,100 @@
 <style>
 
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
 }
 
 body{
-
-    background: radial-gradient(circle at top, #212121, #0a0a0a);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100dvh;
-    color:white;
-
-    perspective:1200px;
-
+background: radial-gradient(circle at top, #212121, #0a0a0a);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100dvh;
+color:white;
+perspective:1200px;
 }
+
+/* ===========================
+INTRO
+=========================== */
+
+#intro-screen{
+position:fixed;
+inset:0;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:99999;
+transition:opacity 1s ease;
+}
+
+#intro-title{
+font-size:60px;
+letter-spacing:12px;
+opacity:0;
+animation:introFade 3s forwards;
+}
+
+#intro-loader{
+margin-top:40px;
+width:60px;
+height:60px;
+border:6px solid transparent;
+border-top:6px solid white;
+border-radius:50%;
+animation:spinLoader 1s linear infinite;
+opacity:0;
+}
+
+@keyframes introFade{
+0%{opacity:0;}
+30%{opacity:1;}
+70%{opacity:1;}
+100%{opacity:0;}
+}
+
+@keyframes spinLoader{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+/* ===========================
+CHAT CONTAINER
+=========================== */
 
 .chat-container{
 
-    position:relative;
+position:relative;
 
-    width:90vw;
-    height:90vh;
+width:90vw;
+height:90vh;
 
-    min-width:500px;
-    min-height:500px;
+min-width:500px;
+min-height:500px;
 
-    background:#111;
+background:#111;
 
-    border:1px solid #444;
+border:1px solid #444;
 
-    display:flex;
-    flex-direction:column;
+display:flex;
+flex-direction:column;
 
-    overflow:hidden;
+overflow:hidden;
 
-    border-radius:20px;
+border-radius:20px;
 
-    box-shadow:
-    0 0 20px rgba(255,255,255,0.05),
-    0 0 60px rgba(0,0,0,0.8);
+box-shadow:
+0 0 20px rgba(255,255,255,0.05),
+0 0 60px rgba(0,0,0,0.8);
 
-    transition:transform 0.15s ease-out;
+transition:transform 0.15s ease-out;
 
-    transform-style:preserve-3d;
+transform-style:preserve-3d;
 
 }
 
@@ -64,292 +111,274 @@ body{
 
 .chat-container::before{
 
-    content:"";
+content:"";
 
-    position:absolute;
+position:absolute;
 
-    top:-2px;
-    left:-2px;
-    right:-2px;
-    bottom:-2px;
+top:-2px;
+left:-2px;
+right:-2px;
+bottom:-2px;
 
-    border-radius:22px;
+border-radius:22px;
 
-    background:conic-gradient(
-        from 0deg,
-        transparent,
-        transparent,
-        red,
-        rgb(168,109,0),
-        yellow,
-        red,
-        transparent,
-        transparent
-    );
+background:conic-gradient(
+from 0deg,
+transparent,
+transparent,
+red,
+rgb(168,109,0),
+yellow,
+red,
+transparent,
+transparent
+);
 
-    animation:snakeBorder 10s linear infinite;
+animation:snakeBorder 10s linear infinite;
 
-    z-index:0;
+z-index:0;
 
 }
 
 .chat-container::after{
 
-    content:"";
+content:"";
 
-    position:absolute;
+position:absolute;
 
-    inset:2px;
+inset:2px;
 
-    background:#111;
+background:#111;
 
-    border-radius:20px;
+border-radius:20px;
 
-    z-index:1;
+z-index:1;
 
 }
 
 .chat-container > *{
-    position:relative;
-    z-index:2;
+position:relative;
+z-index:2;
 }
 
 @keyframes snakeBorder{
 
-    0%{transform:rotate(0deg);}
-    100%{transform:rotate(360deg);}
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
 
 }
 
 .chat-header{
 
-    background:black;
-    color:white;
+background:black;
+color:white;
 
-    padding:10px;
+padding:10px;
 
-    text-align:center;
+text-align:center;
 
-    font-size:0.75rem;
+font-size:0.75rem;
 
-    font-weight:bold;
+font-weight:bold;
 
-    text-transform:uppercase;
+text-transform:uppercase;
 
-    letter-spacing:3px;
+letter-spacing:3px;
 
 }
 
 .chat-box{
 
-    flex:1;
+flex:1;
 
-    padding:12px;
+padding:12px;
 
-    overflow-y:auto;
+overflow-y:auto;
 
-    display:flex;
+display:flex;
 
-    flex-direction:column;
+flex-direction:column;
 
-    gap:8px;
+gap:8px;
 
 }
 
 .chat-box::-webkit-scrollbar{
-    width:4px;
+width:4px;
 }
 
 .chat-box::-webkit-scrollbar-thumb{
-    background:#444;
-    border-radius:10px;
+background:#444;
+border-radius:10px;
 }
 
 .message{
 
-    max-width:80%;
+max-width:80%;
 
-    padding:8px 12px;
+padding:8px 12px;
 
-    font-size:0.95rem;
+font-size:0.95rem;
 
-    line-height:1.3;
+line-height:1.3;
 
-    border:1px solid #333;
+border:1px solid #333;
 
-    border-radius:12px;
+border-radius:12px;
 
-    word-wrap:break-word;
+word-wrap:break-word;
 
 }
 
 .user-message{
 
-    background:#1c1c1c;
+background:#1c1c1c;
 
-    color:white;
+color:white;
 
-    align-self:flex-end;
+align-self:flex-end;
 
-    border-bottom-right-radius:2px;
+border-bottom-right-radius:2px;
 
 }
 
 .bot-message{
 
-    background:#1c1c1c;
+background:#1c1c1c;
 
-    color:white;
+color:white;
 
-    align-self:flex-start;
+align-self:flex-start;
 
-    border-bottom-left-radius:2px;
+border-bottom-left-radius:2px;
 
-    white-space:pre-wrap;
-    font-family:monospace;
+white-space:pre-wrap;
+font-family:monospace;
 
 }
 
 .chat-input-area{
 
-    display:flex;
+display:flex;
 
-    padding:8px;
+padding:8px;
 
-    border-top:1px solid #333;
+border-top:1px solid #333;
 
-    gap:5px;
+gap:5px;
 
 }
 
 .chat-input-area input{
 
-    flex:1;
+flex:1;
 
-    padding:8px 12px;
+padding:8px 12px;
 
-    border:1px solid #444;
+border:1px solid #444;
 
-    background:#111;
+background:#111;
 
-    color:white;
+color:white;
 
-    border-radius:15px;
+border-radius:15px;
 
-    outline:none;
+outline:none;
 
-    font-size:0.8rem;
+font-size:0.8rem;
 
 }
 
 .chat-input-area button{
 
-    background:red;
+background:red;
 
-    color:black;
+color:black;
 
-    border:none;
+border:none;
 
-    width:60px;
+width:60px;
 
-    height:32px;
+height:32px;
 
-    cursor:pointer;
+cursor:pointer;
 
-    font-weight:bold;
+font-weight:bold;
 
-    font-size:1.25rem;
+font-size:1.25rem;
 
-    border-radius:5px;
+border-radius:5px;
 
 }
 
 .chat-input-area button:hover{
 
-    background:#ff2121;
+background:#ff2121;
 
 }
 
 .typing-cursor{
 
-    display:inline-block;
+display:inline-block;
 
-    width:8px;
+width:8px;
 
-    background:white;
+background:white;
 
-    margin-left:3px;
+margin-left:3px;
 
-    animation:blink 1s infinite;
+animation:blink 1s infinite;
 
 }
 
 @keyframes blink{
 
-    0%{opacity:1;}
-    50%{opacity:0;}
-    100%{opacity:1;}
+0%{opacity:1;}
+50%{opacity:0;}
+100%{opacity:1;}
 
 }
 
-
 /* ===========================
-MODO CELULAR
+MOBILE
 =========================== */
 
 @media (max-width:768px){
 
 body{
-    padding:10px;
+padding:10px;
 }
 
 .chat-container{
 
-    width:95%;
-    height:95%;
+width:95%;
+height:95%;
 
-    min-width:unset;
-    min-height:unset;
+min-width:unset;
+min-height:unset;
 
-    border-radius:12px;
+border-radius:12px;
 
 }
 
-.chat-header{
-    font-size:1.5rem;
-    letter-spacing:2px;
+#intro-title{
+font-size:40px;
 }
 
 .message{
-    max-width:75%;
-    font-size:1.2rem;
+max-width:75%;
+font-size:1.1rem;
 }
 
 .chat-input-area input{
-    font-size:1.5rem;
-    padding:12px;
+font-size:1.2rem;
+padding:12px;
 }
 
 .chat-input-area button{
-
-    background:red;
-
-    color:black;
-
-    border:none;
-
-    width:60px;
-
-    height:60px;
-
-    cursor:pointer;
-
-    font-weight:bold;
-
-    font-size:2.5rem; /* aumenta o tamanho da seta */
-
-    border-radius:5px;
-
+width:60px;
+height:60px;
+font-size:2rem;
 }
 
 }
@@ -359,6 +388,14 @@ body{
 </head>
 
 <body>
+
+<div id="intro-screen">
+
+<div id="intro-title">AYRIS</div>
+
+<div id="intro-loader"></div>
+
+</div>
 
 <div class="chat-container">
 
@@ -391,116 +428,134 @@ const sendBtn=document.getElementById("send-btn");
 const BOT_API_URL="https://buffy-unoutworn-solange.ngrok-free.dev/chat";
 
 function scrollBottom(){
-    chatBox.scrollTop=chatBox.scrollHeight;
+chatBox.scrollTop=chatBox.scrollHeight;
 }
 
 function appendMessage(sender,text,id=null){
 
-    const msg=document.createElement("div");
+const msg=document.createElement("div");
 
-    msg.classList.add("message");
-    msg.classList.add(sender==="user"?"user-message":"bot-message");
+msg.classList.add("message");
+msg.classList.add(sender==="user"?"user-message":"bot-message");
 
-    if(id)msg.id=id;
+if(id)msg.id=id;
 
-    msg.textContent=text;
+msg.textContent=text;
 
-    chatBox.appendChild(msg);
+chatBox.appendChild(msg);
 
-    scrollBottom();
+scrollBottom();
 
-    return msg;
+return msg;
 
 }
 
 async function typeMessage(element,text){
 
-    element.textContent="";
+element.textContent="";
 
-    const cursor=document.createElement("span");
-    cursor.classList.add("typing-cursor");
+const cursor=document.createElement("span");
+cursor.classList.add("typing-cursor");
 
-    for(let i=0;i<text.length;i++){
+for(let i=0;i<text.length;i++){
 
-        element.textContent+=text[i];
+element.textContent+=text[i];
 
-        if(i%2===0){
-            await new Promise(r=>setTimeout(r,15));
-        }
+if(i%2===0){
+await new Promise(r=>setTimeout(r,15));
+}
 
-        scrollBottom();
-
-    }
-
-    element.appendChild(cursor);
-
-    setTimeout(()=>cursor.remove(),500);
+scrollBottom();
 
 }
+
+element.appendChild(cursor);
+
+setTimeout(()=>cursor.remove(),500);
+
+}
+
 async function sendMessage(){
 
-	const text = userInput.value.trim();
+const text = userInput.value.trim();
 
-	if(!text) return;
+if(!text) return;
 
-	appendMessage("user", text);
+appendMessage("user", text);
 
-	userInput.value = "";
-	userInput.focus();
+userInput.value = "";
+userInput.focus();
 
-	const tempId = "loading-" + Date.now();
+const tempId = "loading-" + Date.now();
 
-	appendMessage("bot", "Ayris está pensando...", tempId);
+appendMessage("bot", "Ayris está pensando...", tempId);
 
-	try{
+try{
 
-		const response = await fetch(BOT_API_URL, {
-			method: "POST",
-			headers: {"Content-Type":"application/json"},
-			body: JSON.stringify({message:text})
-		});
+const response = await fetch(BOT_API_URL, {
+method: "POST",
+headers: {"Content-Type":"application/json"},
+body: JSON.stringify({message:text})
+});
 
-		if(!response.ok){
-			throw new Error("Servidor respondeu erro");
-		}
+if(!response.ok){
+throw new Error("Servidor respondeu erro");
+}
 
-		const data = await response.json();
+const data = await response.json();
 
-		const tempMsg = document.getElementById(tempId);
+const tempMsg = document.getElementById(tempId);
 
-		if(tempMsg){
-			await typeMessage(tempMsg, data.reply);
-		}
+if(tempMsg){
+await typeMessage(tempMsg, data.reply);
+}
 
-	}catch(error){
+}catch(error){
 
-		console.error(error);
+console.error(error);
 
-		const tempMsg = document.getElementById(tempId);
+const tempMsg = document.getElementById(tempId);
 
-		if(tempMsg){
-			tempMsg.textContent = "Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
-			tempMsg.style.color = "red";
-		}
-
-	}
+if(tempMsg){
+tempMsg.textContent = "Vish, deu erro paizão, espera um tanto até o servidor voltar novamente";
+tempMsg.style.color = "red";
+}
 
 }
+
+}
+
 sendBtn.addEventListener("click",sendMessage);
 
 userInput.addEventListener("keydown",(e)=>{
 
-    if(e.key==="Enter"){
-        e.preventDefault();
-        sendMessage();
-    }
+if(e.key==="Enter"){
+e.preventDefault();
+sendMessage();
+}
 
 });
 
+/* INTRO CONTROLE */
 
-/* ===========================
-EFEITO 3D (APENAS PC)
-=========================== */
+const introTitle=document.getElementById("intro-title");
+const introLoader=document.getElementById("intro-loader");
+const introScreen=document.getElementById("intro-screen");
+
+setTimeout(()=>{
+introTitle.style.display="none";
+introLoader.style.opacity="1";
+},3000);
+
+setTimeout(()=>{
+introScreen.style.opacity="0";
+},6000);
+
+setTimeout(()=>{
+introScreen.style.display="none";
+},7000);
+
+/* EFEITO 3D */
 
 const container=document.querySelector(".chat-container");
 
@@ -510,24 +565,24 @@ if(!isMobile){
 
 document.addEventListener("mousemove",(e)=>{
 
-    const rect=container.getBoundingClientRect();
+const rect=container.getBoundingClientRect();
 
-    const centerX=rect.left+rect.width/2;
-    const centerY=rect.top+rect.height/2;
+const centerX=rect.left+rect.width/2;
+const centerY=rect.top+rect.height/2;
 
-    const mouseX=e.clientX-centerX;
-    const mouseY=e.clientY-centerY;
+const mouseX=e.clientX-centerX;
+const mouseY=e.clientY-centerY;
 
-    const rotateX=(-mouseY/rect.height);
-    const rotateY=(mouseX/rect.width);
+const rotateX=(-mouseY/rect.height);
+const rotateY=(mouseX/rect.width);
 
-    container.style.transform=
-    `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+container.style.transform=
+`rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 
 });
 
 document.addEventListener("mouseleave",()=>{
-    container.style.transform="rotateX(0) rotateY(0)";
+container.style.transform="rotateX(0) rotateY(0)";
 });
 
 }
