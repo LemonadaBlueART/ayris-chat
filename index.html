@@ -348,57 +348,38 @@
 
             // efeito de digitação a partir do JSON, com markdown
             try {
-            
+                // Requisição fetch para tokens (stream)
                 const response = await fetch(BOT_API_URL, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "ngrok-skip-browser-warning": "true"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: text })
                 });
-            
+
                 if (!response.ok) throw new Error("Erro na rede");
-            
-                const dataText = await response.text(); // texto inteiro
-                const tempMsg = document.getElementById(tempId);
-                tempMsg.innerHTML = ""; // limpa loader
-            
-                // transforma em JSON
-                let jsonData;
-                try {
-                    jsonData = JSON.parse(dataText);
-                } catch(e) {
-                    tempMsg.textContent = "Erro ao interpretar JSON da IA";
-                    tempMsg.style.color = "red";
-                    botFalando = false;
-                    return;
-                }
-            
-                const textToShow = jsonData.response || "";
-            
-                // efeito de digitação com markdown
-                let i = 0;
-                const speed = 20; // ms por letra
-                let currentText = "";
-            
-                function typeWriter() {
-                    if (i < textToShow.length) {
-                        currentText += textToShow.charAt(i);
-                        i++;
-            
-                        // renderiza markdown a cada letra
-                        tempMsg.innerHTML = marked.parse(currentText);
-            
+
+                // Leitura do stream de tokens
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let done = false;
+                let textToShow = "";
+
+                thinking.innerHTML = ""; // limpa loader
+
+                while(!done){
+                    const {value, done: doneReading} = await reader.read();
+                    done = doneReading;
+                    if(value){
+                        const chunk = decoder.decode(value);
+                        textToShow += chunk;
+
+                        // Renderiza markdown a cada token
+                        thinking.innerHTML = marked.parse(textToShow);
                         scrollBottom();
-                        setTimeout(typeWriter, speed);
-                    } else {
-                        botFalando = false;
                     }
                 }
-            
-                typeWriter();
-            
+
+                botFalando = false;
+
             } catch(error) {
                 console.error(error);
                 const tempMsg = document.getElementById(tempId);
