@@ -23,6 +23,34 @@
 			perspective: 1200px;
 			overflow: hidden;
 		}
+		pre{
+		background:#0d0d0d;
+		padding:15px;
+		border-radius:10px;
+		overflow-x:auto;
+		border:1px solid #333;
+		}
+		
+		code{
+		background:#111;
+		padding:3px 6px;
+		border-radius:6px;
+		color:#ff7b7b;
+		}
+		
+		table{
+		border-collapse:collapse;
+		margin-top:10px;
+		}
+		
+		th,td{
+		border:1px solid #444;
+		padding:8px 12px;
+		}
+		
+		th{
+		background:#111;
+		}
 
 		/* ===========================
 		INTRO
@@ -292,6 +320,7 @@
 			}
 		}
 	</style>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -315,222 +344,244 @@
 	
 	<script>
 	
-		const chatBox = document.getElementById("chat-box");
-		const userInput = document.getElementById("user-input");
-		const sendBtn = document.getElementById("send-btn");
-		const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
+	const chatBox = document.getElementById("chat-box");
+	const userInput = document.getElementById("user-input");
+	const sendBtn = document.getElementById("send-btn");
 	
-		let botFalando = false;
+	const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
 	
-		// Detecta se é dispositivo móvel
-		const isMobile =
-			/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-			(window.innerWidth <= 768);
+	let botFalando = false;
 	
-		function scrollBottom() {
-			chatBox.scrollTop = chatBox.scrollHeight;
-		}
+	/* Detecta mobile */
 	
-		function appendMessage(sender, text, id = null) {
-			const msg = document.createElement("div");
-			msg.classList.add("message");
-			msg.classList.add(sender === "user" ? "user-message" : "bot-message");
+	const isMobile =
+	/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+	(window.innerWidth <= 768);
 	
-			if (id) msg.id = id;
+	/* Scroll */
 	
-			msg.textContent = text;
+	function scrollBottom(){
+	chatBox.scrollTop = chatBox.scrollHeight;
+	}
 	
-			chatBox.appendChild(msg);
+	/* Criar mensagem */
 	
-			scrollBottom();
+	function appendMessage(sender,text,id=null){
 	
-			return msg;
-		}
+	const msg=document.createElement("div");
 	
-		async function sendMessage() {
+	msg.classList.add("message");
+	msg.classList.add(sender==="user"?"user-message":"bot-message");
 	
-			// NÃO ENVIA SE A IA ESTÁ RESPONDENDO
-			if (botFalando) return;
+	if(id) msg.id=id;
 	
-			const text = userInput.value.trim();
-			if (!text) return;
+	msg.textContent=text;
 	
-			botFalando = true;
+	chatBox.appendChild(msg);
 	
-			appendMessage("user", text);
+	scrollBottom();
 	
-			userInput.value = "";
-			userInput.style.height = "40px";
-			userInput.focus();
+	return msg;
 	
-			const tempId = "loading-" + Date.now();
-			const thinking = appendMessage("bot", "", tempId);
-
-			thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
+	}
 	
-			try {
+	/* Enviar mensagem */
 	
-				const response = await fetch(BOT_API_URL, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						"ngrok-skip-browser-warning": "true"
-					},
-					body: JSON.stringify({ message: text })
-				});
+	async function sendMessage(){
 	
-				if (!response.ok) throw new Error("Erro na rede");
+	if(botFalando) return;
 	
-				const reader = response.body.getReader();
-				const decoder = new TextDecoder();
+	const text=userInput.value.trim();
 	
-				const tempMsg = document.getElementById(tempId);
+	if(!text) return;
 	
-				tempMsg.textContent = "";
+	botFalando=true;
 	
-				while (true) {
-				
-				    const { done, value } = await reader.read();
-				
-				    if (done) break;
-				
-				    let chunk = decoder.decode(value, { stream: true });
-				
-				    chunk = chunk
-				        .replace(/\u200B/g, "")
-				        .replace(/^\s+/, "");
-				
-				    const span = document.createElement("span");
-				
-				    span.classList.add("fade-in-token");
-				
-				    span.textContent = chunk;
-				
-				    tempMsg.appendChild(span);
-				
-				    scrollBottom();
-				}
+	appendMessage("user",text);
 	
-				botFalando = false;
+	userInput.value="";
+	userInput.style.height="40px";
+	userInput.focus();
 	
-			} catch (error) {
+	const tempId="loading-"+Date.now();
 	
-				console.error(error);
+	const thinking=appendMessage("bot","",tempId);
 	
-				const tempMsg = document.getElementById(tempId);
+	thinking.innerHTML=`<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
 	
-				if (tempMsg) {
-					tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
-					tempMsg.style.color = "red";
-				}
+	try{
 	
-				botFalando = false;
-			}
-		}
+	const response=await fetch(BOT_API_URL,{
+	method:"POST",
+	headers:{
+	"Content-Type":"application/json",
+	"ngrok-skip-browser-warning":"true"
+	},
+	body:JSON.stringify({message:text})
+	});
 	
-		/* ENTER PARA ENVIAR */
+	if(!response.ok) throw new Error("Erro na rede");
 	
-		userInput.addEventListener("keydown", (e) => {
+	const reader=response.body.getReader();
+	const decoder=new TextDecoder();
 	
-			if (botFalando) {
-				e.preventDefault();
-				return;
-			}
+	const tempMsg=document.getElementById(tempId);
 	
-			if (e.key === "Enter") {
+	tempMsg.innerHTML="";
 	
-				if (isMobile) return;
+	/* texto acumulado para markdown */
 	
-				if (!e.shiftKey) {
-					e.preventDefault();
-					sendMessage();
-				}
-			}
-		});
+	let fullText="";
 	
-		/* AUTO ALTURA INPUT */
+	while(true){
 	
-		userInput.addEventListener("input", function () {
+	const {done,value}=await reader.read();
 	
-			this.style.height = "auto";
-			this.style.height = this.scrollHeight + "px";
+	if(done) break;
 	
-		});
+	let chunk=decoder.decode(value,{stream:true});
 	
-		/* DIGITAR EM QUALQUER LUGAR DA PÁGINA */
+	chunk=chunk.replace(/\u200B/g,"");
 	
-		document.addEventListener("keydown", (e) => {
+	fullText+=chunk;
 	
-			if (botFalando) return;
+	/* renderiza markdown */
 	
-			if (document.activeElement === userInput) return;
+	tempMsg.innerHTML=marked.parse(fullText);
 	
-			if (e.ctrlKey || e.metaKey || e.altKey) return;
+	scrollBottom();
 	
-			if (e.key.length === 1) {
+	}
 	
-				userInput.focus();
+	botFalando=false;
 	
-				userInput.value += e.key;
+	}catch(error){
 	
-				userInput.dispatchEvent(new Event("input"));
-			}
+	console.error(error);
 	
-			if (e.key === "Backspace") {
+	const tempMsg=document.getElementById(tempId);
 	
-				userInput.focus();
+	if(tempMsg){
+	tempMsg.textContent="Vish, deu erro paizão, o servidor caiu.";
+	tempMsg.style.color="red";
+	}
 	
-				userInput.value = userInput.value.slice(0, -1);
+	botFalando=false;
 	
-				userInput.dispatchEvent(new Event("input"));
-			}
-		});
+	}
 	
-		sendBtn.addEventListener("click", sendMessage);
+	}
 	
-		/* INTRO CONTROLE */
+	/* ENTER PARA ENVIAR */
 	
-		const introTitle = document.getElementById("intro-title");
-		const introLoader = document.getElementById("intro-loader");
-		const introScreen = document.getElementById("intro-screen");
+	userInput.addEventListener("keydown",(e)=>{
 	
-		setTimeout(() => {
-			introTitle.style.display = "none";
-			introLoader.style.opacity = "1";
-		}, 3000);
+	if(botFalando){
+	e.preventDefault();
+	return;
+	}
 	
-		setTimeout(() => {
-			introScreen.style.opacity = "0";
-		}, 6000);
+	if(e.key==="Enter"){
 	
-		setTimeout(() => {
-			introScreen.style.display = "none";
-		}, 7000);
+	if(isMobile) return;
 	
-		/* EFEITO 3D */
+	if(!e.shiftKey){
+	e.preventDefault();
+	sendMessage();
+	}
 	
-		const container = document.querySelector(".chat-container");
+	}
 	
-		if (!isMobile) {
+	});
 	
-			document.addEventListener("mousemove", (e) => {
+	/* AUTO ALTURA INPUT */
 	
-				const rect = container.getBoundingClientRect();
+	userInput.addEventListener("input",function(){
 	
-				const rotateX =
-					(-(e.clientY - (rect.top + rect.height / 2)) / rect.height) * 2;
+	this.style.height="auto";
+	this.style.height=this.scrollHeight+"px";
 	
-				const rotateY =
-					((e.clientX - (rect.left + rect.width / 2)) / rect.width) * 2;
+	});
 	
-				container.style.transform =
-					`rotateX(${rotateX}deg) rotateY(${rotateY}deg}`;
-			});
+	/* DIGITAR EM QUALQUER LUGAR */
 	
-			document.addEventListener("mouseleave", () => {
-				container.style.transform = "rotateX(0) rotateY(0)";
-			});
-		}
+	document.addEventListener("keydown",(e)=>{
+	
+	if(botFalando) return;
+	
+	if(document.activeElement===userInput) return;
+	
+	if(e.ctrlKey||e.metaKey||e.altKey) return;
+	
+	if(e.key.length===1){
+	
+	userInput.focus();
+	
+	userInput.value+=e.key;
+	
+	userInput.dispatchEvent(new Event("input"));
+	
+	}
+	
+	if(e.key==="Backspace"){
+	
+	userInput.focus();
+	
+	userInput.value=userInput.value.slice(0,-1);
+	
+	userInput.dispatchEvent(new Event("input"));
+	
+	}
+	
+	});
+	
+	sendBtn.addEventListener("click",sendMessage);
+	
+	/* INTRO */
+	
+	const introTitle=document.getElementById("intro-title");
+	const introLoader=document.getElementById("intro-loader");
+	const introScreen=document.getElementById("intro-screen");
+	
+	setTimeout(()=>{
+	introTitle.style.display="none";
+	introLoader.style.opacity="1";
+	},3000);
+	
+	setTimeout(()=>{
+	introScreen.style.opacity="0";
+	},6000);
+	
+	setTimeout(()=>{
+	introScreen.style.display="none";
+	},7000);
+	
+	/* EFEITO 3D */
+	
+	const container=document.querySelector(".chat-container");
+	
+	if(!isMobile){
+	
+	document.addEventListener("mousemove",(e)=>{
+	
+	const rect=container.getBoundingClientRect();
+	
+	const rotateX=
+	(-(e.clientY-(rect.top+rect.height/2))/rect.height)*2;
+	
+	const rotateY=
+	((e.clientX-(rect.left+rect.width/2))/rect.width)*2;
+	
+	container.style.transform=
+	`rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+	
+	});
+	
+	document.addEventListener("mouseleave",()=>{
+	container.style.transform="rotateX(0) rotateY(0)";
+	});
+	
+	}
 	
 	</script>
 
