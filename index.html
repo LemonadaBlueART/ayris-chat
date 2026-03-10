@@ -335,51 +335,54 @@
         }
 
         /* Enviar mensagem com efeito de digitação */
+        /* Dentro da tag <script> ... */
         async function sendMessage() {
             if(botFalando) return;
             const text = userInput.value.trim();
             if(!text) return;
-
+        
             botFalando = true;
             appendMessage("user", text);
             userInput.value = "";
             userInput.style.height = "40px";
             userInput.focus();
-
+        
             const tempId = "loading-" + Date.now();
             const thinking = appendMessage("bot", "", tempId);
-            thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
-
+        
+            // Cria elementos separados: texto e dots
+            const contentSpan = document.createElement("span");
+            contentSpan.className = "bot-text";
+            thinking.appendChild(contentSpan);
+        
+            const dots = document.createElement("span");
+            dots.className = "thinking-dots";
+            dots.innerHTML = "<span>.</span><span>.</span><span>.</span>";
+            thinking.appendChild(dots);
+        
             try {
                 const response = await fetch(BOT_API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: text })
                 });
-            
+        
                 if (!response.ok) throw new Error("Erro na rede");
-            
+        
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let done = false;
                 let textToShow = "";
-            
-                // Mantém os dots de loading
-                const dots = document.createElement("span");
-                dots.className = "thinking-dots";
-                dots.innerHTML = "<span>.</span><span>.</span><span>.</span>";
-                thinking.appendChild(dots);
-            
+        
                 while(!done){
                     const {value, done: doneReading} = await reader.read();
                     done = doneReading;
                     if(value){
                         textToShow += decoder.decode(value, { stream: true });
-                        // Limita tamanho para não travar
                         if(textToShow.length > 20000) textToShow = textToShow.slice(-20000);
-            
-                        // Atualiza o innerHTML mantendo os dots
-                        thinking.innerHTML = marked.parse(textToShow) + dots.outerHTML;
+                        
+                        // Atualiza apenas o span do texto
+                        contentSpan.innerHTML = marked.parse(textToShow);
                         scrollBottom();
                     }
                 }
@@ -390,6 +393,7 @@
                     tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
                     tempMsg.style.color = "red";
                 }
+            } finally {
                 botFalando = false;
             }
         }
