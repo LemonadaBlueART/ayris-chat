@@ -359,23 +359,24 @@
                 if (!response.ok) throw new Error("Erro na rede");
 
                 // Leitura do stream de tokens
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let done = false;
-                let textToShow = "";
-
-                thinking.innerHTML = ""; // limpa loader
-
-                while(!done){
-                    const {value, done: doneReading} = await reader.read();
-                    done = doneReading;
-                    if(value){
-                        const chunk = decoder.decode(value);
-                        textToShow += chunk;
-
-                        // Renderiza markdown a cada token
-                        thinking.innerHTML = marked.parse(textToShow);
-                        scrollBottom();
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let done = false;
+                    let textToShow = "";
+                    
+                    thinking.innerHTML = ""; // limpa loader
+                    
+                    while(!done){
+                        const {value, done: doneReading} = await reader.read();
+                        done = doneReading;
+                        if(value){
+                            // Concatena texto
+                            textToShow += decoder.decode(value, { stream: true });
+                    
+                            // Renderiza markdown incremental
+                            thinking.innerHTML = marked.parse(textToShow);
+                            scrollBottom();
+                        }
                     }
                 }
 
