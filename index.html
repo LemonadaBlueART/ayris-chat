@@ -346,7 +346,7 @@
             const thinking = appendMessage("bot", "", tempId);
             thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
 
-            // efeito de digitação a partir do JSON
+            // efeito de digitação a partir do JSON, com markdown
             try {
             
                 const response = await fetch(BOT_API_URL, {
@@ -360,11 +360,11 @@
             
                 if (!response.ok) throw new Error("Erro na rede");
             
-                const dataText = await response.text(); // pega o texto completo
+                const dataText = await response.text(); // texto inteiro
                 const tempMsg = document.getElementById(tempId);
                 tempMsg.innerHTML = ""; // limpa loader
             
-                // tenta transformar em JSON
+                // transforma em JSON
                 let jsonData;
                 try {
                     jsonData = JSON.parse(dataText);
@@ -375,17 +375,21 @@
                     return;
                 }
             
-                // texto que queremos mostrar
                 const textToShow = jsonData.response || "";
             
-                // efeito de digitação
+                // efeito de digitação com markdown
                 let i = 0;
                 const speed = 20; // ms por letra
+                let currentText = "";
             
                 function typeWriter() {
                     if (i < textToShow.length) {
-                        tempMsg.textContent += textToShow.charAt(i);
+                        currentText += textToShow.charAt(i);
                         i++;
+            
+                        // renderiza markdown a cada letra
+                        tempMsg.innerHTML = marked.parse(currentText);
+            
                         scrollBottom();
                         setTimeout(typeWriter, speed);
                     } else {
@@ -396,15 +400,12 @@
                 typeWriter();
             
             } catch(error) {
-            
                 console.error(error);
                 const tempMsg = document.getElementById(tempId);
-            
                 if(tempMsg){
                     tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
                     tempMsg.style.color = "red";
                 }
-            
                 botFalando = false;
             }
         }
