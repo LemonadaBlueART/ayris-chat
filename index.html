@@ -1,218 +1,196 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<link rel="icon" type="image/png" href="morcega.png">
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Ayris</title>
+    <link rel="icon" type="image/png" href="morcega.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayris</title>
 
-	<style>
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		}
-
-		body {
-			background: radial-gradient(circle at top, #212121, #0a0a0a);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100dvh;
-			color: white;
-			perspective: 1200px;
-			overflow: hidden;
-		}
-		pre{
-		background:#0d0d0d;
-		padding:15px;
-		border-radius:10px;
-		overflow-x:auto;
-		border:1px solid #333;
-		}
-		
-		code{
-		background:#111;
-		padding:3px 6px;
-		border-radius:6px;
-		color:#ff7b7b;
-		}
-		
-		table{
-		border-collapse:collapse;
-		margin-top:10px;
-		}
-		
-		th,td{
-		border:1px solid #444;
-		padding:8px 12px;
-		}
-		
-		th{
-		background:#111;
-		}
-
-		/* ===========================
-		INTRO
-		=========================== */
-		#intro-screen {
-			position: fixed;
-			inset: 0;
-			background: black;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-			z-index: 99999;
-			transition: opacity 1s ease;
-		}
-
-		#intro-title {
-			font-size: 100px;
-			letter-spacing: 12px;
-			opacity: 0;
-			animation: introFade 3s forwards;
-			text-align: center;
-		}
-
-		#intro-loader {
-			margin-top: 40px;
-			width: 60px;
-			height: 60px;
-			border: 6px solid transparent;
-			border-top: 6px solid white;
-			border-radius: 50%;
-			animation: spinLoader 1s linear infinite;
-			opacity: 0;
-		}
-		
-		.thinking-dots {
-			display: inline-flex;
-			gap: 6px;
-			white-space: nowrap;
-		}
-		
-		.thinking-dots span {
-			opacity: 0.2;
-			animation: thinkingFade 1.5s infinite;
-		}
-		
-		.thinking-dots span:nth-child(2) {
-			animation-delay: 0.3s;
-		}
-		
-		.thinking-dots span:nth-child(3) {
-			animation-delay: 0.6s;
-		}
-		
-		@keyframes thinkingFade {
-			0% { opacity: 0.2; }
-			50% { opacity: 1; }
-			100% { opacity: 0.2; }
-		}
-		
-        /* Animação de Fade In para os tokens */
-		.fade-in-token {
-		    opacity: 0;
-		    animation: fadeIn 0.4s ease forwards;
-		}
-
-        @keyframes fadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(2px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-		@keyframes introFade {
-			0% { opacity: 0; }
-			30% { opacity: 1; }
-			70% { opacity: 1; }
-			100% { opacity: 0; }
-		}
+        body {
+            background: radial-gradient(circle at top, #212121, #0a0a0a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            color: white;
+            perspective: 1200px;
+            overflow: hidden;
+        }
 
-		@keyframes spinLoader {
-			from { transform: rotate(0deg); }
-			to { transform: rotate(360deg); }
-		}
+        pre {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
 
-		/* ===========================
-		CHAT CONTAINER
-		=========================== */
-		.chat-container {
-			position: relative;
-			width: 90vw;
-			height: 90vh;
-			min-width: 500px;
-			min-height: 500px;
-			background: #111;
-			border: 1px solid #444;
-			display: flex;
-			flex-direction: column;
-			overflow: hidden;
-			border-radius: 20px;
-			box-shadow: 0 0 20px rgba(255, 255, 255, 0.05), 0 0 60px rgba(0, 0, 0, 0.8);
-			transition: transform 0.15s ease-out;
-			transform-style: preserve-3d;
-		}
+        code {
+            background: #111;
+            padding: 3px 6px;
+            border-radius: 6px;
+            color: #ff7b7b;
+        }
 
-		/* COBRA DE LUZ */
-		.chat-container::before {
-			content: "";
-			position: absolute;
-			top: -2px; left: -2px; right: -2px; bottom: -2px;
-			border-radius: 22px;
-			background: conic-gradient(from 0deg, transparent, transparent, red, rgb(168,109,0), yellow, red, transparent, transparent);
-			animation: snakeBorder 10s linear infinite;
-			z-index: 0;
-		}
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
 
-		.chat-container::after {
-			content: "";
-			position: absolute;
-			inset: 2px;
-			background: #111;
-			border-radius: 20px;
-			z-index: 1;
-		}
+        th, td {
+            border: 1px solid #444;
+            padding: 8px 12px;
+        }
 
-		.chat-container > * {
-			position: relative;
-			z-index: 2;
-		}
+        th {
+            background: #111;
+        }
 
-		@keyframes snakeBorder {
-			0% { transform: rotate(0deg); }
-			100% { transform: rotate(360deg); }
-		}
+        /* INTRO */
+        #intro-screen {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 99999;
+            transition: opacity 1s ease;
+        }
 
-		.chat-header {
-			background: black;
-			color: #FFB6C1 ;
-			padding: 10px;
-			text-align: center;
-			font-size: 1.5rem;
-			font-weight: bold;
-			text-transform: uppercase;
-			letter-spacing: 3px;
-		}
+        #intro-title {
+            font-size: 100px;
+            letter-spacing: 12px;
+            opacity: 0;
+            animation: introFade 3s forwards;
+            text-align: center;
+        }
 
-		.chat-box {
-			flex: 1;
-			padding: 12px;
-			overflow-y: auto;
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-		}
+        #intro-loader {
+            margin-top: 40px;
+            width: 60px;
+            height: 60px;
+            border: 6px solid transparent;
+            border-top: 6px solid white;
+            border-radius: 50%;
+            animation: spinLoader 1s linear infinite;
+            opacity: 0;
+        }
 
-		.chat-box::-webkit-scrollbar { width: 4px; }
-		.chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .thinking-dots {
+            display: inline-flex;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .thinking-dots span {
+            opacity: 0.2;
+            animation: thinkingFade 1.5s infinite;
+        }
+
+        .thinking-dots span:nth-child(2) { animation-delay: 0.3s; }
+        .thinking-dots span:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes thinkingFade {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-token { opacity: 0; animation: fadeIn 0.4s ease forwards; }
+
+        @keyframes introFade {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes spinLoader {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* CHAT CONTAINER */
+        .chat-container {
+            position: relative;
+            width: 90vw;
+            height: 90vh;
+            min-width: 500px;
+            min-height: 500px;
+            background: #111;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.05), 0 0 60px rgba(0,0,0,0.8);
+            transition: transform 0.15s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        .chat-container::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 22px;
+            background: conic-gradient(from 0deg, transparent, transparent, red, rgb(168,109,0), yellow, red, transparent, transparent);
+            animation: snakeBorder 10s linear infinite;
+            z-index: 0;
+        }
+
+        .chat-container::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            background: #111;
+            border-radius: 20px;
+            z-index: 1;
+        }
+
+        .chat-container > * { position: relative; z-index: 2; }
+
+        @keyframes snakeBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chat-header {
+            background: black;
+            color: #FFB6C1;
+            padding: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar { width: 4px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
         .message {
             max-width: 80%;
@@ -221,370 +199,248 @@
             line-height: 1.4;
             border: 1px solid #333;
             border-radius: 15px;
-
             word-wrap: break-word;
         }
 
-		.user-message {
-			background: #1c1c1c;
-			color: white;
-			align-self: flex-end;
-			border-bottom-right-radius: 2px;
-		}
+        .user-message {
+            background: #1c1c1c;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
 
         .bot-message {
             background: #1c1c1c;
             color: white;
             align-self: flex-start;
             border-bottom-left-radius: 2px;
-
             white-space: normal;
             word-break: break-word;
         }
 
-		.chat-input-area {
-			display: flex;
-			padding: 10px;
-			border-top: 1px solid #333;
-			gap: 8px;
-			align-items: flex-end;
-		}
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #333;
+            gap: 8px;
+            align-items: flex-end;
+        }
 
-		.chat-input-area textarea {
-			flex: 1;
-			padding: 10px 15px;
-			border: 1px solid #444;
-			background: #111;
-			color: white;
-			border-radius: 15px;
-			outline: none;
-			font-size: 0.9rem;
-			resize: none;
-			min-height: 40px;
-			max-height: 150px;
-			overflow-y: auto;
-		}
+        .chat-input-area textarea {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #444;
+            background: #111;
+            color: white;
+            border-radius: 15px;
+            outline: none;
+            font-size: 0.9rem;
+            resize: none;
+            min-height: 40px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
 
-		.chat-input-area button {
-			background: red;
-			color: black;
-			border: none;
-			width: 50px;
-			height: 40px;
-			cursor: pointer;
-			font-weight: bold;
-			font-size: 1.2rem;
-			border-radius: 10px;
-			transition: background 0.2s;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
+        .chat-input-area button {
+            background: red;
+            color: black;
+            border: none;
+            width: 50px;
+            height: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-		.chat-input-area button:hover {
-			background: #ff2121;
-		}
+        .chat-input-area button:hover { background: #ff2121; }
 
-		.typing-cursor {
-			display: inline-block;
-			width: 8px;
-			background: white;
-			margin-left: 3px;
-			animation: blink 1s infinite;
-		}
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            background: white;
+            margin-left: 3px;
+            animation: blink 1s infinite;
+        }
 
-		@keyframes blink {
-			0%, 100% { opacity: 1; }
-			50% { opacity: 0; }
-		}
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
 
-		/* ===========================
-		MOBILE ADJUSTS
-		=========================== */
-		@media (max-width: 768px) {
-			.chat-container {
-				width: 98vw;
-				height: 98vh;
-				min-width: unset;
-				min-height: unset;
-			}
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 98vw;
+                height: 98vh;
+                min-width: unset;
+                min-height: unset;
+            }
 
-			#intro-title {text-align: center; font-size: 30px; letter-spacing: 5px; }
+            #intro-title { font-size: 30px; letter-spacing: 5px; }
 
-			.message { max-width: 75%; font-size: 1.5rem; }
+            .message { max-width: 75%; font-size: 1.5rem; }
 
-			.chat-input-area textarea { font-size:4rem; }
+            .chat-input-area textarea { font-size: 4rem; }
 
-			.chat-input-area button {
-				width: 110px;
-				height: 100px;
-			}
-		}
-	</style>
-	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+            .chat-input-area button { width: 110px; height: 100px; }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-	<div id="intro-screen">
-		<div id="intro-title">🥀🌺🌸😎🕶️Ayris🕶️😎🌸🌺🥀</div>
-		<div id="intro-loader"></div>
-	</div>
+    <div id="intro-screen">
+        <div id="intro-title">🥀🌺🌸😎🕶️Ayris🕶️😎🌸🌺🥀</div>
+        <div id="intro-loader"></div>
+    </div>
 
-	<div class="chat-container">
-		<div class="chat-header">CAIXA DE TEXTO DA AYRIS</div>
-		
-		<div id="chat-box" class="chat-box">
-			<div class="message bot-message">Ayris está funcionando! 😉</div>
-		</div>
+    <div class="chat-container">
+        <div class="chat-header">CAIXA DE TEXTO DA AYRIS</div>
+        <div id="chat-box" class="chat-box">
+            <div class="message bot-message">Ayris está funcionando! 😉</div>
+        </div>
 
-		<div class="chat-input-area">
-			<textarea id="user-input" placeholder="..." autocomplete="off" rows="1"></textarea>
-			<button type="button" id="send-btn">→</button>
-		</div>
-	</div>
-	
-	<script>
-	
-	const chatBox = document.getElementById("chat-box");
-	const userInput = document.getElementById("user-input");
-	const sendBtn = document.getElementById("send-btn");
-	
-	const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
-	
-	let botFalando = false;
-	
-	/* Detecta mobile */
-	
-	const isMobile =
-	/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-	(window.innerWidth <= 768);
-	
-	/* Scroll */
-	
-	function scrollBottom(){
-	chatBox.scrollTop = chatBox.scrollHeight;
-	}
-	
-	/* Criar mensagem */
-	
-	function appendMessage(sender,text,id=null){
-	
-	const msg=document.createElement("div");
-	
-	msg.classList.add("message");
-	msg.classList.add(sender==="user"?"user-message":"bot-message");
-	
-	if(id) msg.id=id;
-	
-	msg.textContent=text;
-	
-	chatBox.appendChild(msg);
-	
-	scrollBottom();
-	
-	return msg;
-	
-	}
-	
-	/* Enviar mensagem */
-	
-	async function sendMessage(){
-	
-	if(botFalando) return;
-	
-	const text=userInput.value.trim();
-	
-	if(!text) return;
-	
-	botFalando=true;
-	
-	appendMessage("user",text);
-	
-	userInput.value="";
-	userInput.style.height="40px";
-	userInput.focus();
-	
-	const tempId="loading-"+Date.now();
-	
-	const thinking=appendMessage("bot","",tempId);
-	
-	thinking.innerHTML=`<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
-	
-	try{
-	
-	const response=await fetch(BOT_API_URL,{
-	method:"POST",
-	headers:{
-	"Content-Type":"application/json",
-	"ngrok-skip-browser-warning":"true"
-	},
-	body:JSON.stringify({message:text})
-	});
-	
-	if(!response.ok) throw new Error("Erro na rede");
-	
-	const reader=response.body.getReader();
-	const decoder=new TextDecoder();
-	
-	const tempMsg=document.getElementById(tempId);
-	
-	tempMsg.innerHTML="";
-	
-	/* texto acumulado para markdown */
-	
-	let fullText="";
-	
-	while(true){
-	
-	const {done,value}=await reader.read();
-	
-	if(done) break;
-	
-	let chunk=decoder.decode(value,{stream:true});
-	
-	chunk=chunk.replace(/\u200B/g,"");
-	
-	fullText+=chunk;
-	
-	/* renderiza markdown */
-	
-	tempMsg.innerHTML=marked.parse(fullText);
-	
-	scrollBottom();
-	
-	}
-	
-	botFalando=false;
-	
-	}catch(error){
-	
-	console.error(error);
-	
-	const tempMsg=document.getElementById(tempId);
-	
-	if(tempMsg){
-	tempMsg.textContent="Vish, deu erro paizão, o servidor caiu.";
-	tempMsg.style.color="red";
-	}
-	
-	botFalando=false;
-	
-	}
-	
-	}
-	
-	/* ENTER PARA ENVIAR */
-	
-	userInput.addEventListener("keydown",(e)=>{
-	
-	if(botFalando){
-	e.preventDefault();
-	return;
-	}
-	
-	if(e.key==="Enter"){
-	
-	if(isMobile) return;
-	
-	if(!e.shiftKey){
-	e.preventDefault();
-	sendMessage();
-	}
-	
-	}
-	
-	});
-	
-	/* AUTO ALTURA INPUT */
-	
-	userInput.addEventListener("input",function(){
-	
-	this.style.height="auto";
-	this.style.height=this.scrollHeight+"px";
-	
-	});
-	
-	/* DIGITAR EM QUALQUER LUGAR */
-	
-	document.addEventListener("keydown",(e)=>{
-	
-	if(botFalando) return;
-	
-	if(document.activeElement===userInput) return;
-	
-	if(e.ctrlKey||e.metaKey||e.altKey) return;
-	
-	if(e.key.length===1){
-	
-	userInput.focus();
-	
-	userInput.value+=e.key;
-	
-	userInput.dispatchEvent(new Event("input"));
-	
-	}
-	
-	if(e.key==="Backspace"){
-	
-	userInput.focus();
-	
-	userInput.value=userInput.value.slice(0,-1);
-	
-	userInput.dispatchEvent(new Event("input"));
-	
-	}
-	
-	});
-	
-	sendBtn.addEventListener("click",sendMessage);
-	
-	/* INTRO */
-	
-	const introTitle=document.getElementById("intro-title");
-	const introLoader=document.getElementById("intro-loader");
-	const introScreen=document.getElementById("intro-screen");
-	
-	setTimeout(()=>{
-	introTitle.style.display="none";
-	introLoader.style.opacity="1";
-	},3000);
-	
-	setTimeout(()=>{
-	introScreen.style.opacity="0";
-	},6000);
-	
-	setTimeout(()=>{
-	introScreen.style.display="none";
-	},7000);
-	
-	/* EFEITO 3D */
-	
-	const container=document.querySelector(".chat-container");
-	
-	if(!isMobile){
-	
-	document.addEventListener("mousemove",(e)=>{
-	
-	const rect=container.getBoundingClientRect();
-	
-	const rotateX=
-	(-(e.clientY-(rect.top+rect.height/2))/rect.height)*2;
-	
-	const rotateY=
-	((e.clientX-(rect.left+rect.width/2))/rect.width)*2;
-	
-	container.style.transform=
-	`rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-	
-	});
-	
-	document.addEventListener("mouseleave",()=>{
-	container.style.transform="rotateX(0) rotateY(0)";
-	});
-	
-	}
-	
-	</script>
+        <div class="chat-input-area">
+            <textarea id="user-input" placeholder="..." autocomplete="off" rows="1"></textarea>
+            <button type="button" id="send-btn">→</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+
+        const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
+        let botFalando = false;
+
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+
+        function scrollBottom() { chatBox.scrollTop = chatBox.scrollHeight; }
+
+        function appendMessage(sender, text, id=null){
+            const msg = document.createElement("div");
+            msg.classList.add("message", sender==="user"?"user-message":"bot-message");
+            if(id) msg.id = id;
+            msg.textContent = text;
+            chatBox.appendChild(msg);
+            scrollBottom();
+            return msg;
+        }
+
+        /* Enviar mensagem com efeito de digitação */
+        async function sendMessage() {
+            if(botFalando) return;
+            const text = userInput.value.trim();
+            if(!text) return;
+            botFalando = true;
+            appendMessage("user", text);
+            userInput.value = ""; userInput.style.height = "40px"; userInput.focus();
+            const tempId = "loading-" + Date.now();
+            const thinking = appendMessage("bot", "", tempId);
+            thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
+
+            try {
+                const response = await fetch(BOT_API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type":"application/json", "ngrok-skip-browser-warning":"true" },
+                    body: JSON.stringify({ message: text })
+                });
+                if(!response.ok) throw new Error("Erro na rede");
+                const data = await response.text();
+                const tempMsg = document.getElementById(tempId);
+                tempMsg.innerHTML = "";
+
+                let i = 0;
+                const speed = 20;
+
+                function typeWriter() {
+                    if(i < data.length){
+                        tempMsg.textContent += data.charAt(i);
+                        i++;
+                        scrollBottom();
+                        setTimeout(typeWriter, speed);
+                    } else {
+                        botFalando = false;
+                    }
+                }
+                typeWriter();
+
+            } catch(error){
+                console.error(error);
+                const tempMsg = document.getElementById(tempId);
+                if(tempMsg){
+                    tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
+                    tempMsg.style.color = "red";
+                }
+                botFalando = false;
+            }
+        }
+
+        /* ENTER PARA ENVIAR */
+        userInput.addEventListener("keydown", e => {
+            if(botFalando){ e.preventDefault(); return; }
+            if(e.key === "Enter"){
+                if(isMobile) return;
+                if(!e.shiftKey){ e.preventDefault(); sendMessage(); }
+            }
+        });
+
+        /* AUTO ALTURA INPUT */
+        userInput.addEventListener("input", function(){
+            this.style.height="auto";
+            this.style.height=this.scrollHeight+"px";
+        });
+
+        /* DIGITAR EM QUALQUER LUGAR */
+        document.addEventListener("keydown", e => {
+            if(botFalando) return;
+            if(document.activeElement===userInput) return;
+            if(e.ctrlKey||e.metaKey||e.altKey) return;
+            if(e.key.length===1){
+                userInput.focus();
+                userInput.value += e.key;
+                userInput.dispatchEvent(new Event("input"));
+            }
+            if(e.key === "Backspace"){
+                userInput.focus();
+                userInput.value = userInput.value.slice(0,-1);
+                userInput.dispatchEvent(new Event("input"));
+            }
+        });
+
+        sendBtn.addEventListener("click", sendMessage);
+
+        /* INTRO */
+        const introTitle = document.getElementById("intro-title");
+        const introLoader = document.getElementById("intro-loader");
+        const introScreen = document.getElementById("intro-screen");
+
+        setTimeout(()=>{ introTitle.style.display="none"; introLoader.style.opacity="1"; }, 3000);
+        setTimeout(()=>{ introScreen.style.opacity="0"; }, 6000);
+        setTimeout(()=>{ introScreen.style.display="none"; }, 7000);
+
+        /* EFEITO 3D */
+        const container = document.querySelector(".chat-container");
+        if(!isMobile){
+            document.addEventListener("mousemove", e => {
+                const rect = container.getBoundingClientRect();
+                const rotateX = (-(e.clientY - (rect.top+rect.height/2))/rect.height)*2;
+                const rotateY = ((e.clientX - (rect.left+rect.width/2))/rect.width)*2;
+                container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            document.addEventListener("mouseleave", ()=>{
+                container.style.transform="rotateX(0) rotateY(0)";
+            });
+        }
+
+    </script>
 
 </body>
 </html>
