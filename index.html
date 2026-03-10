@@ -356,15 +356,20 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: text })
                 });
-
+            
                 if (!response.ok) throw new Error("Erro na rede");
-
+            
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
                 let done = false;
                 let textToShow = "";
-                thinking.innerHTML = "";
-
+            
+                // Mantém os dots de loading
+                const dots = document.createElement("span");
+                dots.className = "thinking-dots";
+                dots.innerHTML = "<span>.</span><span>.</span><span>.</span>";
+                thinking.appendChild(dots);
+            
                 while(!done){
                     const {value, done: doneReading} = await reader.read();
                     done = doneReading;
@@ -372,13 +377,12 @@
                         textToShow += decoder.decode(value, { stream: true });
                         // Limita tamanho para não travar
                         if(textToShow.length > 20000) textToShow = textToShow.slice(-20000);
-                        thinking.innerHTML = marked.parse(textToShow);
+            
+                        // Atualiza o innerHTML mantendo os dots
+                        thinking.innerHTML = marked.parse(textToShow) + dots.outerHTML;
                         scrollBottom();
                     }
                 }
-
-                botFalando = false;
-
             } catch(error) {
                 console.error(error);
                 const tempMsg = document.getElementById(tempId);
