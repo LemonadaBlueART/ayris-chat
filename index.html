@@ -365,11 +365,13 @@
                 let textToShow = "";
                 thinking.innerHTML = "";
 
-                while(!done) {
-                    const { value, done: doneReading } = await reader.read();
+                while(!done){
+                    const {value, done: doneReading} = await reader.read();
                     done = doneReading;
-                    if(value) {
+                    if(value){
                         textToShow += decoder.decode(value, { stream: true });
+                        // Limita tamanho para não travar
+                        if(textToShow.length > 20000) textToShow = textToShow.slice(-20000);
                         thinking.innerHTML = marked.parse(textToShow);
                         scrollBottom();
                     }
