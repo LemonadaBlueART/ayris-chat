@@ -84,12 +84,10 @@
 		}
 		
         /* Animação de Fade In para os tokens */
-        .fade-in-token {
-            opacity: 0;
-            animation: fadeIn 0.4s ease forwards;
-            display: inline-block;
-            white-space: pre-wrap; /* Mantém espaços e quebras de linha */
-        }
+		.fade-in-token {
+		    opacity: 0;
+		    animation: fadeIn 0.4s ease forwards;
+		}
 
         @keyframes fadeIn {
             from { 
@@ -211,7 +209,7 @@
             align-self: flex-start;
             border-bottom-left-radius: 2px;
 
-            white-space: normal;
+            white-space: pre-wrap;
             word-break: break-word;
         }
 
@@ -406,7 +404,7 @@
 				
 				    span.classList.add("fade-in-token");
 				
-				    span.innerHTML = chunk.replace(/\n/g, "<br>");
+				    span.textContent = chunk;
 				
 				    tempMsg.appendChild(span);
 				
