@@ -211,7 +211,7 @@
             align-self: flex-start;
             border-bottom-left-radius: 2px;
 
-            white-space: pre-wrap;
+            white-space: normal;
             word-break: break-word;
         }
 
@@ -391,22 +391,26 @@
 				tempMsg.textContent = "";
 	
 				while (true) {
-	
-					const { done, value } = await reader.read();
-					if (done) break;
-	
-					const chunk = decoder.decode(value, { stream: true });
-	
-					const span = document.createElement("span");
-					span.classList.add("fade-in-token");
-	
-					const cleanChunk = chunk.replace(/\u200B/g, "");
-	
-					span.innerHTML = cleanChunk.replace(/\n/g, "<br>");
-	
-					tempMsg.appendChild(span);
-	
-					scrollBottom();
+				
+				    const { done, value } = await reader.read();
+				
+				    if (done) break;
+				
+				    let chunk = decoder.decode(value, { stream: true });
+				
+				    chunk = chunk
+				        .replace(/\u200B/g, "")
+				        .replace(/^\s+/, "");
+				
+				    const span = document.createElement("span");
+				
+				    span.classList.add("fade-in-token");
+				
+				    span.innerHTML = chunk.replace(/\n/g, "<br>");
+				
+				    tempMsg.appendChild(span);
+				
+				    scrollBottom();
 				}
 	
 				botFalando = false;
