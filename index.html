@@ -346,23 +346,45 @@
             const thinking = appendMessage("bot", "", tempId);
             thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
 
+            // efeito de digitação a partir do JSON
             try {
+            
                 const response = await fetch(BOT_API_URL, {
                     method: "POST",
-                    headers: { "Content-Type":"application/json", "ngrok-skip-browser-warning":"true" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "ngrok-skip-browser-warning": "true"
+                    },
                     body: JSON.stringify({ message: text })
                 });
-                if(!response.ok) throw new Error("Erro na rede");
-                const data = await response.text();
+            
+                if (!response.ok) throw new Error("Erro na rede");
+            
+                const dataText = await response.text(); // pega o texto completo
                 const tempMsg = document.getElementById(tempId);
-                tempMsg.innerHTML = "";
-
+                tempMsg.innerHTML = ""; // limpa loader
+            
+                // tenta transformar em JSON
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(dataText);
+                } catch(e) {
+                    tempMsg.textContent = "Erro ao interpretar JSON da IA";
+                    tempMsg.style.color = "red";
+                    botFalando = false;
+                    return;
+                }
+            
+                // texto que queremos mostrar
+                const textToShow = jsonData.response || "";
+            
+                // efeito de digitação
                 let i = 0;
-                const speed = 20;
-
+                const speed = 20; // ms por letra
+            
                 function typeWriter() {
-                    if(i < data.length){
-                        tempMsg.textContent += data.charAt(i);
+                    if (i < textToShow.length) {
+                        tempMsg.textContent += textToShow.charAt(i);
                         i++;
                         scrollBottom();
                         setTimeout(typeWriter, speed);
@@ -370,15 +392,19 @@
                         botFalando = false;
                     }
                 }
+            
                 typeWriter();
-
-            } catch(error){
+            
+            } catch(error) {
+            
                 console.error(error);
                 const tempMsg = document.getElementById(tempId);
+            
                 if(tempMsg){
                     tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
                     tempMsg.style.color = "red";
                 }
+            
                 botFalando = false;
             }
         }
