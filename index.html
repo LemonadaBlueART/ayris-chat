@@ -25,33 +25,24 @@
             overflow: hidden;
         }
 
+        /* Estilização para o Markdown renderizado */
+        .bot-message p { margin-bottom: 8px; }
+        .bot-message p:last-child { margin-bottom: 0; }
+        .bot-message pre { margin: 10px 0; font-size: 0.85rem; }
+        
         pre {
             background: #0d0d0d;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             overflow-x: auto;
             border: 1px solid #333;
         }
 
         code {
-            background: #111;
-            padding: 3px 6px;
-            border-radius: 6px;
+            background: #222;
+            padding: 2px 4px;
+            border-radius: 4px;
             color: #ff7b7b;
-        }
-
-        table {
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 1px solid #444;
-            padding: 8px 12px;
-        }
-
-        th {
-            background: #111;
         }
 
         /* INTRO */
@@ -68,8 +59,8 @@
         }
 
         #intro-title {
-            font-size: 100px;
-            letter-spacing: 12px;
+            font-size: 50px; /* Reduzi um pouco para não quebrar em telas médias */
+            letter-spacing: 8px;
             opacity: 0;
             animation: introFade 3s forwards;
             text-align: center;
@@ -77,10 +68,10 @@
 
         #intro-loader {
             margin-top: 40px;
-            width: 60px;
-            height: 60px;
-            border: 6px solid transparent;
-            border-top: 6px solid white;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid white;
             border-radius: 50%;
             animation: spinLoader 1s linear infinite;
             opacity: 0;
@@ -88,9 +79,7 @@
 
         .thinking-dots {
             display: inline-flex;
-            gap: 6px;
-            white-space: nowrap;
-            pointer-events: none;
+            gap: 4px;
         }
 
         .thinking-dots span {
@@ -102,17 +91,9 @@
         .thinking-dots span:nth-child(3) { animation-delay: 0.6s; }
 
         @keyframes thinkingFade {
-            0% { opacity: 0.2; }
+            0%, 100% { opacity: 0.2; }
             50% { opacity: 1; }
-            100% { opacity: 0.2; }
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(2px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in-token { opacity: 0; animation: fadeIn 0.4s ease forwards; }
 
         @keyframes introFade {
             0% { opacity: 0; }
@@ -122,7 +103,6 @@
         }
 
         @keyframes spinLoader {
-            from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
@@ -131,26 +111,23 @@
             position: relative;
             width: 90vw;
             height: 90vh;
-            min-width: 500px;
-            min-height: 500px;
+            max-width: 1000px;
             background: #111;
-            border: 1px solid #444;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05), 0 0 60px rgba(0,0,0,0.8);
-            transition: transform 0.15s ease-out;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            transition: transform 0.2s ease-out;
             transform-style: preserve-3d;
         }
 
         .chat-container::before {
             content: "";
             position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 22px;
-            background: conic-gradient(from 0deg, transparent, transparent, red, rgb(168,109,0), yellow, red, transparent, transparent);
-            animation: snakeBorder 10s linear infinite;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, transparent, red, orange, yellow, red, transparent, transparent);
+            animation: snakeBorder 6s linear infinite;
             z-index: 0;
         }
 
@@ -159,136 +136,115 @@
             position: absolute;
             inset: 2px;
             background: #111;
-            border-radius: 20px;
+            border-radius: 19px;
             z-index: 1;
         }
 
         .chat-container > * { position: relative; z-index: 2; }
 
         @keyframes snakeBorder {
-            0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
         .chat-header {
-            background: black;
+            background: rgba(0,0,0,0.8);
             color: #FFB6C1;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            text-transform: uppercase;
             letter-spacing: 3px;
+            border-bottom: 1px solid #333;
         }
 
         .chat-box {
             flex: 1;
-            padding: 12px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
+            scroll-behavior: smooth;
         }
 
-        .chat-box::-webkit-scrollbar { width: 4px; }
-        .chat-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .chat-box::-webkit-scrollbar { width: 5px; }
+        .chat-box::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
         .message {
-            max-width: 80%;
-            padding: 10px 14px;
+            max-width: 85%;
+            padding: 12px 16px;
             font-size: 0.95rem;
-            line-height: 1.4;
-            border: 1px solid #333;
-            border-radius: 15px;
+            line-height: 1.5;
+            border-radius: 18px;
             word-wrap: break-word;
+            animation: msgPop 0.3s ease;
+        }
+
+        @keyframes msgPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .user-message {
-            background: #1c1c1c;
-            color: white;
+            background: #222;
+            color: #fff;
             align-self: flex-end;
-            border-bottom-right-radius: 2px;
+            border: 1px solid #444;
+            border-bottom-right-radius: 4px;
         }
 
         .bot-message {
-            background: #1c1c1c;
-            color: white;
+            background: #1a1a1a;
+            color: #eee;
             align-self: flex-start;
-            border-bottom-left-radius: 2px;
-            white-space: normal;
-            word-break: break-word;
+            border: 1px solid #333;
+            border-bottom-left-radius: 4px;
         }
 
         .chat-input-area {
             display: flex;
-            padding: 10px;
+            padding: 15px;
+            background: #0d0d0d;
             border-top: 1px solid #333;
-            gap: 8px;
+            gap: 10px;
             align-items: flex-end;
         }
 
         .chat-input-area textarea {
             flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #444;
-            background: #111;
+            padding: 12px;
+            background: #181818;
+            border: 1px solid #333;
             color: white;
-            border-radius: 15px;
+            border-radius: 12px;
             outline: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             resize: none;
-            min-height: 40px;
             max-height: 150px;
-            overflow-y: auto;
         }
 
         .chat-input-area button {
-            background: red;
-            color: black;
+            background: #ff0000;
+            color: white;
             border: none;
-            width: 50px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
-            font-weight: bold;
+            border-radius: 12px;
             font-size: 1.2rem;
-            border-radius: 10px;
-            transition: background 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            transition: 0.2s;
+            flex-shrink: 0;
         }
 
-        .chat-input-area button:hover { background: #ff2121; }
+        .chat-input-area button:hover { background: #b30000; transform: scale(1.05); }
 
-        .typing-cursor {
-            display: inline-block;
-            width: 8px;
-            background: white;
-            margin-left: 3px;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* MOBILE */
+        /* MOBILE FIXES */
         @media (max-width: 768px) {
-            .chat-container {
-                width: 98vw;
-                height: 98vh;
-                min-width: unset;
-                min-height: unset;
-            }
-
-            #intro-title { font-size: 30px; letter-spacing: 5px; }
-
-            .message { max-width: 75%; font-size: 1.5rem; }
-
-            .chat-input-area textarea { font-size: 4rem; }
-
-            .chat-input-area button { width: 110px; height: 100px; }
+            .chat-container { width: 100vw; height: 100dvh; border-radius: 0; }
+            .chat-container::after { border-radius: 0; }
+            #intro-title { font-size: 32px; }
+            .message { max-width: 90%; font-size: 1rem; }
+            .chat-input-area textarea { font-size: 1rem; }
         }
     </style>
 
@@ -297,19 +253,19 @@
 <body>
 
     <div id="intro-screen">
-        <div id="intro-title">🥀🌺🌸😎🕶️Ayris🕶️😎🌸🌺🥀</div>
+        <div id="intro-title">🥀 Ayris 🥀</div>
         <div id="intro-loader"></div>
     </div>
 
     <div class="chat-container">
-        <div class="chat-header">CAIXA DE TEXTO DA AYRIS</div>
+        <div class="chat-header">AYRIS SYSTEM</div>
         <div id="chat-box" class="chat-box">
-            <div class="message bot-message">Ayris está funcionando! 😉</div>
+            <div class="message bot-message">Ayris está pronta. Como posso ajudar? 😉</div>
         </div>
 
         <div class="chat-input-area">
-            <textarea id="user-input" placeholder="..." autocomplete="off" rows="1"></textarea>
-            <button type="button" id="send-btn">→</button>
+            <textarea id="user-input" placeholder="Digite uma mensagem..." rows="1"></textarea>
+            <button type="button" id="send-btn">➔</button>
         </div>
     </div>
 
@@ -317,139 +273,120 @@
         const chatBox = document.getElementById("chat-box");
         const userInput = document.getElementById("user-input");
         const sendBtn = document.getElementById("send-btn");
-
         const BOT_API_URL = "https://buffy-unoutworn-solange.ngrok-free.dev/chat";
+        
         let botFalando = false;
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+        function scrollBottom() { 
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' }); 
+        }
 
-        function scrollBottom() { chatBox.scrollTop = chatBox.scrollHeight; }
-
-        function appendMessage(sender, text, id=null){
+        function appendMessage(sender, text, id = null) {
             const msg = document.createElement("div");
-            msg.classList.add("message", sender==="user"?"user-message":"bot-message");
-            if(id) msg.id = id;
-            msg.textContent = text;
+            msg.classList.add("message", sender === "user" ? "user-message" : "bot-message");
+            if (id) msg.id = id;
+            
+            if (sender === "user") {
+                msg.textContent = text;
+            } else {
+                msg.innerHTML = text; // Para o bot aceitar HTML/Marked
+            }
+            
             chatBox.appendChild(msg);
             scrollBottom();
             return msg;
         }
 
-        /* Enviar mensagem com efeito de digitação */
         async function sendMessage() {
-            if(botFalando) return;
+            if (botFalando) return;
             const text = userInput.value.trim();
-            if(!text) return;
+            if (!text) return;
+
             botFalando = true;
             appendMessage("user", text);
-            userInput.value = ""; userInput.style.height = "40px"; userInput.focus();
-            const tempId = "loading-" + Date.now();
-            const thinking = appendMessage("bot", "", tempId);
-            thinking.innerHTML = `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
+            
+            // Reset input
+            userInput.value = "";
+            userInput.style.height = "45px";
 
-            // efeito de digitação a partir do JSON, com markdown
+            const tempId = "bot-" + Date.now();
+            const botMsgElement = appendMessage("bot", `<span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>`, tempId);
+
             try {
-                // Requisição fetch para tokens (stream)
                 const response = await fetch(BOT_API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message: text })
                 });
 
-                if (!response.ok) throw new Error("Erro na rede");
+                if (!response.ok) throw new Error("Servidor offline");
 
-                // Leitura do stream de tokens
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let done = false;
-                    let textToShow = "";
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
+                
+                botMsgElement.innerHTML = ""; // Limpa os pontinhos
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
                     
-                    thinking.innerHTML = ""; // limpa loader
-                    
-                    while(!done){
-                        const {value, done: doneReading} = await reader.read();
-                        done = doneReading;
-                        if(value){
-                            // Concatena texto
-                            textToShow += decoder.decode(value, { stream: true });
-                    
-                            // Renderiza markdown incremental
-                            thinking.innerHTML = marked.parse(textToShow);
-                            scrollBottom();
-                        }
-                    }
+                    fullText += decoder.decode(value, { stream: true });
+                    // Renderiza markdown em tempo real
+                    botMsgElement.innerHTML = marked.parse(fullText);
+                    scrollBottom();
                 }
 
-                botFalando = false;
-
-            } catch(error) {
+            } catch (error) {
                 console.error(error);
-                const tempMsg = document.getElementById(tempId);
-                if(tempMsg){
-                    tempMsg.textContent = "Vish, deu erro paizão, o servidor caiu.";
-                    tempMsg.style.color = "red";
-                }
+                botMsgElement.innerHTML = "<span style='color: #ff4d4d;'>Erro: Não foi possível conectar ao servidor.</span>";
+            } finally {
                 botFalando = false;
             }
         }
 
-        /* ENTER PARA ENVIAR */
-        userInput.addEventListener("keydown", e => {
-            if(botFalando){ e.preventDefault(); return; }
-            if(e.key === "Enter"){
-                if(isMobile) return;
-                if(!e.shiftKey){ e.preventDefault(); sendMessage(); }
-            }
-        });
-
-        /* AUTO ALTURA INPUT */
-        userInput.addEventListener("input", function(){
-            this.style.height="auto";
-            this.style.height=this.scrollHeight+"px";
-        });
-
-        /* DIGITAR EM QUALQUER LUGAR */
-        document.addEventListener("keydown", e => {
-            if(botFalando) return;
-            if(document.activeElement===userInput) return;
-            if(e.ctrlKey||e.metaKey||e.altKey) return;
-            if(e.key.length===1){
-                userInput.focus();
-                userInput.value += e.key;
-                userInput.dispatchEvent(new Event("input"));
-            }
-            if(e.key === "Backspace"){
-                userInput.focus();
-                userInput.value = userInput.value.slice(0,-1);
-                userInput.dispatchEvent(new Event("input"));
-            }
-        });
-
+        /* EVENTOS */
         sendBtn.addEventListener("click", sendMessage);
 
-        /* INTRO */
-        const introTitle = document.getElementById("intro-title");
-        const introLoader = document.getElementById("intro-loader");
-        const introScreen = document.getElementById("intro-screen");
+        userInput.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.shiftKey && !isMobile) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-        setTimeout(()=>{ introTitle.style.display="none"; introLoader.style.opacity="1"; }, 3000);
-        setTimeout(()=>{ introScreen.style.opacity="0"; }, 6000);
-        setTimeout(()=>{ introScreen.style.display="none"; }, 7000);
+        userInput.addEventListener("input", function() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight) + "px";
+        });
+
+        // Intro Logic
+        window.addEventListener('load', () => {
+            const introTitle = document.getElementById("intro-title");
+            const introLoader = document.getElementById("intro-loader");
+            const introScreen = document.getElementById("intro-screen");
+
+            setTimeout(() => { 
+                introTitle.style.display = "none"; 
+                introLoader.style.opacity = "1"; 
+            }, 3000);
+
+            setTimeout(() => { 
+                introScreen.style.opacity = "0"; 
+                setTimeout(() => introScreen.style.display = "none", 1000);
+            }, 5500);
+        });
 
         /* EFEITO 3D */
         const container = document.querySelector(".chat-container");
-        if(!isMobile){
+        if (!isMobile) {
             document.addEventListener("mousemove", e => {
-                const rect = container.getBoundingClientRect();
-                const rotateX = (-(e.clientY - (rect.top+rect.height/2))/rect.height)*2;
-                const rotateY = ((e.clientX - (rect.left+rect.width/2))/rect.width)*2;
-                container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            });
-            document.addEventListener("mouseleave", ()=>{
-                container.style.transform="rotateX(0) rotateY(0)";
+                const x = (window.innerWidth / 2 - e.pageX) / 50;
+                const y = (window.innerHeight / 2 - e.pageY) / 50;
+                container.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
             });
         }
-
     </script>
 
 </body>
