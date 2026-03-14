@@ -200,6 +200,46 @@
             border: 1px solid #333;
             border-bottom-left-radius: 4px;
         }
+        /* Estilização das Tabelas no Chat */
+        .bot-message table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            background-color: #111;
+            border-radius: 8px;
+            overflow: hidden; /* Para as bordas arredondadas funcionarem */
+            border: 1px solid #333;
+        }
+        
+        .bot-message th {
+            background-color: #222;
+            color: #FFB6C1; /* Cor rosa do seu tema */
+            font-weight: bold;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid #333;
+        }
+        
+        .bot-message td {
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            color: #ccc;
+            vertical-align: top;
+        }
+        
+        .bot-message tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .bot-message tr:nth-child(even) {
+            background-color: #161616; /* Efeito zebra para leitura fácil */
+        }
+        
+        /* Garante que a tabela não quebre o layout no mobile */
+        .bot-message {
+            overflow-x: auto;
+        }
 
         .chat-input-area {
             display: flex;
