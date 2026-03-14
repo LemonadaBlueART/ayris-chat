@@ -201,28 +201,33 @@
             border-bottom-left-radius: 4px;
         }
         /* Estilização das Tabelas no Chat */
+        /* Container da tabela para scroll */
+        .bot-message .table-wrapper {
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        /* Tabela */
         .bot-message table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
             font-size: 0.9rem;
             background-color: #111;
             border-radius: 8px;
-            overflow: hidden;
             border: 1px solid #333;
-            display: block;
-            overflow-x: auto;
         }
         
+        /* Cabeçalho */
         .bot-message th {
             background-color: #222;
-            color: #FFB6C1; /* Cor rosa do seu tema */
+            color: #FFB6C1;
             font-weight: bold;
             padding: 10px;
             text-align: left;
             border-bottom: 2px solid #333;
         }
         
+        /* Células */
         .bot-message td {
             padding: 10px;
             border-bottom: 1px solid #222;
@@ -235,12 +240,7 @@
         }
         
         .bot-message tr:nth-child(even) {
-            background-color: #161616; /* Efeito zebra para leitura fácil */
-        }
-        
-        /* Garante que a tabela não quebre o layout no mobile */
-        .bot-message {
-            overflow-x: auto;
+            background-color: #161616;
         }
 
         .chat-input-area {
@@ -377,6 +377,16 @@
                     fullText += decoder.decode(value, { stream: true });
                     // Renderiza markdown em tempo real
                     botMsgElement.innerHTML = marked.parse(fullText);
+
+                    // adiciona scroll somente nas tabelas
+                    botMsgElement.querySelectorAll("table").forEach(table => {
+                        if (!table.parentElement.classList.contains("table-wrapper")) {
+                            const wrapper = document.createElement("div");
+                            wrapper.className = "table-wrapper";
+                            table.parentNode.insertBefore(wrapper, table);
+                            wrapper.appendChild(table);
+                        }
+                    });
                     scrollBottom();
                 }
 
